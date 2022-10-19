@@ -22,9 +22,17 @@ CREATE TABLE "sessions" (
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE "metadata" (
+  "id" SERIAL PRIMARY KEY,
+  "image" TEXT,
+  "title" TEXT,
+  "description" TEXT
+);
+
 CREATE TABLE "posts" (
   "id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES users("id"),
+  "metadataId" INTEGER NOT NULL REFERENCES metadata("id"),
 	"url" TEXT NOT NULL,
 	"content" TEXT NOT NULL,
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()

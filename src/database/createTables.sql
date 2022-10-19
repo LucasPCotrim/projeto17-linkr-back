@@ -9,14 +9,14 @@ CREATE TABLE "users" (
 
 CREATE TABLE "likes" (
   "id" SERIAL PRIMARY KEY,
-	"userId" INTEGER NOT NULL REFERENCES users("id"),
-	"postId" INTEGER NOT NULL REFERENCES posts("id"),
+	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
+	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "sessions" (
   "id" SERIAL PRIMARY KEY,
-	"userId" INTEGER NOT NULL REFERENCES users("id"),
+	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
 	"token" TEXT UNIQUE NOT NULL,
 	"active" BOOLEAN DEFAULT TRUE NOT NULL,
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
@@ -43,6 +43,6 @@ CREATE TABLE "hashtagsPosts" (
 
 CREATE TABLE "visits" (
   "id" SERIAL PRIMARY KEY,
-	"postId" INTEGER UNIQUE NOT NULL REFERENCES posts("id"),
+	"postId" INTEGER UNIQUE NOT NULL REFERENCES "posts"("id"),
 	"count" INTEGER DEFAULT 0
 );

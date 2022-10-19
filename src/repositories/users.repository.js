@@ -2,9 +2,9 @@ import connection from '../database/database.js';
 
 async function createUser(name, email, password, profilePic) {
 	return await connection.query(`
-		INSERT INTO users 
-			(name, email, password, "profilePic") 
-			VALUES ($1, $2, $3, $4);`, 
+    INSERT INTO users 
+    	(name, email, password, "profilePic") 
+    	VALUES ($1, $2, $3, $4);`, 
 			[name, email, password, profilePic])
 }
 

@@ -24,9 +24,9 @@ CREATE TABLE "sessions" (
 
 CREATE TABLE "posts" (
   "id" SERIAL PRIMARY KEY,
-	"userId" INTEGER UNIQUE NOT NULL REFERENCES users("id"),
+	"userId" INTEGER NOT NULL REFERENCES users("id"),
 	"url" TEXT NOT NULL,
-	"content" TEXT UNIQUE NOT NULL,
+	"content" TEXT NOT NULL,
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

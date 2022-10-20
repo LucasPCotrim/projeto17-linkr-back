@@ -36,6 +36,7 @@ async function login(req, res) {
       process.env.SECRET_TOKEN,
       { expiresIn: 7200 }
     );
+
     await insertSessions({ userId: user.rows[0].id, token });
     res.status(200).send({ token });
   } catch (error) {

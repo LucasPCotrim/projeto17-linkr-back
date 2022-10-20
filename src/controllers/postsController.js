@@ -33,21 +33,23 @@ const publishPost = async (req, res) => {
     const postId = insertedPost.rows[0].id;
     const hashtags = findHashtags(content);
     const hashtagsId = [];
-    for (let i = 0; i < hashtags.length; i++) {
-      const isRepeatedHashtag = (await selectHashtag(hashtags[i])).rows[0];
-      if (isRepeatedHashtag) {
-        hashtagsId.push(isRepeatedHashtag.id);
-        continue;
+    if (hashtags.length !== 0) {
+      for (let i = 0; i < hashtags.length; i++) {
+        const isRepeatedHashtag = (await selectHashtag(hashtags[i])).rows[0];
+        if (isRepeatedHashtag) {
+          hashtagsId.push(isRepeatedHashtag.id);
+          continue;
+        }
+        let hashtag = await hashtagInsertion(hashtags[i]);
+        hashtagsId.push(hashtag.rows[0].id);
       }
-      let hashtag = await hashtagInsertion(hashtags[i]);
-      hashtagsId.push(hashtag.rows[0].id);
-    }
 
-    for (let i = 0; i < hashtagsId.length; i++) {
-      hashtagsPostsInsertion({
-        postId,
-        hashtagId: hashtagsId[i],
-      });
+      for (let i = 0; i < hashtagsId.length; i++) {
+        hashtagsPostsInsertion({
+          postId,
+          hashtagId: hashtagsId[i],
+        });
+      }
     }
 
     res.sendStatus(201);

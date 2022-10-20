@@ -3,7 +3,7 @@ import { loginSchema } from "../schemas/loginSchema.js";
 import {
   getUserByEmail,
   insertSessions,
-} from "../repository/loginRepository.js";
+} from "../repositories/loginRepository.js";
 import jwt from "jsonwebtoken";
 
 async function login(req, res) {

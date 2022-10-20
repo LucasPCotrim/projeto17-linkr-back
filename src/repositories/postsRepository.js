@@ -53,6 +53,16 @@ async function getPostsWithUserAndMetadata({ limit }) {
   );
 }
 
+async function getPostById(postId) {
+  return db.query(`SELECT * FROM posts WHERE id = $1;`, [postId]);
+}
+
+async function updateContentPost(postId, content) {
+  return db.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [
+    content,
+    postId,
+  ]);
+}
 export {
   postInsertion,
   insertLinkMetadata,
@@ -60,4 +70,6 @@ export {
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,
+  getPostById,
+  updateContentPost,
 };

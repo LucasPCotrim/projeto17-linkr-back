@@ -5,9 +5,11 @@ import {
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,
-} from '../repositories/postsRepository.js';
-import findHashtags from 'find-hashtags';
-import urlMetadata from 'url-metadata';
+  getPostById,
+  updateContentPost,
+} from "../repositories/postsRepository.js";
+import findHashtags from "find-hashtags";
+import urlMetadata from "url-metadata";
 
 const DEFAULT_POSTS_LIMIT = 20;
 
@@ -74,4 +76,20 @@ async function getPosts(req, res) {
   }
 }
 
-export { publishPost, getPosts };
+async function updatePosts(req, res) {
+  const { postId, content } = req.body;
+  const user = res.locals.user;
+  try {
+    const validUserPost = await getPostById(postId);
+    if (validUserPost.rows[0].userId !== user.id) {
+      return res.sendStatus(401);
+    }
+    await updateContentPost(postId, content);
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
+export { publishPost, getPosts, updatePosts };

@@ -16,8 +16,11 @@ const DEFAULT_POSTS_LIMIT = 20;
 const publishPost = async (req, res) => {
   try {
     const { url, content } = req.body;
-
+    console.log({ url, content });
+    const { user } = res.locals;
+    console.log({ user });
     const { image, title, description } = await urlMetadata(url);
+    console.log({ image, title, description });
     const insertedMetadata = await insertLinkMetadata({
       image,
       title,
@@ -29,27 +32,29 @@ const publishPost = async (req, res) => {
     const insertedPost = await postInsertion({
       url,
       content,
-      userId: 1,
+      userId: user.id,
       metadataId,
     });
     const postId = insertedPost.rows[0].id;
     const hashtags = findHashtags(content);
     const hashtagsId = [];
-    for (let i = 0; i < hashtags.length; i++) {
-      const isRepeatedHashtag = (await selectHashtag(hashtags[i])).rows[0];
-      if (isRepeatedHashtag) {
-        hashtagsId.push(isRepeatedHashtag.id);
-        continue;
+    if (hashtags.length !== 0) {
+      for (let i = 0; i < hashtags.length; i++) {
+        const isRepeatedHashtag = (await selectHashtag(hashtags[i])).rows[0];
+        if (isRepeatedHashtag) {
+          hashtagsId.push(isRepeatedHashtag.id);
+          continue;
+        }
+        let hashtag = await hashtagInsertion(hashtags[i]);
+        hashtagsId.push(hashtag.rows[0].id);
       }
-      let hashtag = await hashtagInsertion(hashtags[i]);
-      hashtagsId.push(hashtag.rows[0].id);
-    }
 
-    for (let i = 0; i < hashtagsId.length; i++) {
-      hashtagsPostsInsertion({
-        postId,
-        hashtagId: hashtagsId[i],
-      });
+      for (let i = 0; i < hashtagsId.length; i++) {
+        hashtagsPostsInsertion({
+          postId,
+          hashtagId: hashtagsId[i],
+        });
+      }
     }
 
     res.sendStatus(201);

@@ -9,7 +9,7 @@ import { postValidation } from "../middlewares/postsMiddleware.js";
 
 const postsRouter = Router();
 
-postsRouter.post("/posts", postValidation, publishPost);
+postsRouter.post("/posts", verificaToken, publishPost);
 postsRouter.get("/posts", getPosts);
 postsRouter.put("/posts/update", verificaToken, updatePosts);
 

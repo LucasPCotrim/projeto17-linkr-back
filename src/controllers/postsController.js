@@ -5,17 +5,20 @@ import {
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,
-} from "../repositories/postsRepository.js";
-import findHashtags from "find-hashtags";
-import urlMetadata from "url-metadata";
+} from '../repositories/postsRepository.js';
+import findHashtags from 'find-hashtags';
+import urlMetadata from 'url-metadata';
 
 const DEFAULT_POSTS_LIMIT = 20;
 
 const publishPost = async (req, res) => {
   try {
     const { url, content } = req.body;
+    console.log({ url, content });
     const { user } = res.locals;
+    console.log({ user });
     const { image, title, description } = await urlMetadata(url);
+    console.log({ image, title, description });
     const insertedMetadata = await insertLinkMetadata({
       image,
       title,

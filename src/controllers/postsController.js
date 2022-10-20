@@ -14,7 +14,7 @@ const DEFAULT_POSTS_LIMIT = 20;
 const publishPost = async (req, res) => {
   try {
     const { url, content } = req.body;
-
+    const { user } = res.locals;
     const { image, title, description } = await urlMetadata(url);
     const insertedMetadata = await insertLinkMetadata({
       image,
@@ -27,7 +27,7 @@ const publishPost = async (req, res) => {
     const insertedPost = await postInsertion({
       url,
       content,
-      userId: 1,
+      userId: user.id,
       metadataId,
     });
     const postId = insertedPost.rows[0].id;

@@ -8,9 +8,20 @@ const postInsertion = ({ url, content, userId }) => {
   ]);
 };
 
+async function insertLinkMetadata({ image, title, description }) {
+  return db.query(
+    `INSERT INTO metadata
+      (image, title, description)
+    VALUES
+      ($1, $2, $3)
+    RETURNING id`,
+    [image, title, description]
+  );
+}
+
 async function getPostsWithUserAndMetadata({ limit }) {
-  return db.query(`
-    SELECT
+  return db.query(
+    `SELECT
       posts.id,
       posts.url,
       posts.content,
@@ -21,8 +32,9 @@ async function getPostsWithUserAndMetadata({ limit }) {
       JOIN users ON posts."userId" = users.id
       JOIN metadata ON posts."metadataId" = metadata.id
     ORDER BY posts."createdAt" DESC
-    LIMIT ${limit}
-  `);
+    LIMIT $1`,
+    [limit]
+  );
 }
 
-export { postInsertion, getPostsWithUserAndMetadata };
+export { postInsertion, insertLinkMetadata, getPostsWithUserAndMetadata };

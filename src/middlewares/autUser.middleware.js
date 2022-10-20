@@ -1,7 +1,7 @@
 import sessionRepository from '../repositories/sessions.repository.js'
 import userRepository from '../repositories/users.repository.js'
 
-async function verificaToken(req, res, next) {
+async function postValidation(req, res, next) {
     const authorization = req.headers.authorization;
     const token = authorization?.replace('Bearer ', '');
     if (!token) {
@@ -18,7 +18,7 @@ async function verificaToken(req, res, next) {
         if (user.rowCount === 0) {
             return res.sendStatus(404);
         }
-        
+
         res.locals.user = user.rows[0];
     } catch (err) {
         console.error(err);
@@ -28,4 +28,4 @@ async function verificaToken(req, res, next) {
     next();
 }
 
-export default verificaToken;
+export default postValidation;

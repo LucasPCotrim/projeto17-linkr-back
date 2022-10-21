@@ -1,4 +1,4 @@
-import db from '../database/database.js';
+import db from "../database/database.js";
 
 const postInsertion = ({ url, content, userId, metadataId }) => {
   return db.query(
@@ -8,18 +8,20 @@ const postInsertion = ({ url, content, userId, metadataId }) => {
 };
 
 const hashtagInsertion = (hashtag) => {
-  return db.query('INSERT INTO hashtags (name) VALUES ($1) RETURNING id;', [hashtag]);
+  return db.query("INSERT INTO hashtags (name) VALUES ($1) RETURNING id;", [
+    hashtag,
+  ]);
 };
 
 const selectHashtag = (hashtag) => {
-  return db.query('SELECT * FROM hashtags WHERE name = $1', [hashtag]);
+  return db.query("SELECT * FROM hashtags WHERE name = $1", [hashtag]);
 };
 
 const hashtagsPostsInsertion = ({ postId, hashtagId }) => {
-  return db.query(`INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`, [
-    postId,
-    hashtagId,
-  ]);
+  return db.query(
+    `INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`,
+    [postId, hashtagId]
+  );
 };
 
 async function insertLinkMetadata({ image, title, description }) {
@@ -79,20 +81,39 @@ async function getPostById(postId) {
 }
 
 async function updateContentPost(postId, content) {
-  return db.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [content, postId]);
+  return db.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [
+    content,
+    postId,
+  ]);
 }
 
 async function getUserLikeOnPostById({ postId, userId }) {
-  return db.query(`SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [postId, userId]);
+  return db.query(
+    `SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`,
+    [postId, userId]
+  );
 }
 
 async function likePostById({ postId, userId }) {
-  return db.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [userId, postId]);
+  return db.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [
+    userId,
+    postId,
+  ]);
 }
 
 async function dislikePostById({ postId, userId }) {
-  return db.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [postId, userId]);
+  return db.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
+    postId,
+    userId,
+  ]);
 }
+
+const deletePostById = ({ postId, userId }) => {
+  return db.query(`DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`, [
+    postId,
+    userId,
+  ]);
+};
 
 export {
   postInsertion,
@@ -107,4 +128,5 @@ export {
   getUserLikeOnPostById,
   likePostById,
   dislikePostById,
+  deletePostById,
 };

@@ -41,18 +41,18 @@ CREATE TABLE "posts" (
 CREATE TABLE "likes" (
   "id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
-	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
+	"postId" INTEGER NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE;,
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "hashtagsPosts" (
   "id" SERIAL PRIMARY KEY,
-	"postId" INTEGER NOT NULL REFERENCES posts("id"),
+	"postId" INTEGER NOT NULL REFERENCES posts("id") ON DELETE CASCADE;,
 	"hashtagId" INTEGER NOT NULL REFERENCES hashtags("id")
 );
 
 CREATE TABLE "visits" (
   "id" SERIAL PRIMARY KEY,
-	"postId" INTEGER UNIQUE NOT NULL REFERENCES "posts"("id"),
+	"postId" INTEGER UNIQUE NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE;,
 	"count" INTEGER DEFAULT 0
 );

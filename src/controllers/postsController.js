@@ -11,9 +11,10 @@ import {
   getUserLikeOnPostById,
   likePostById,
   dislikePostById,
-} from '../repositories/postsRepository.js';
-import findHashtags from 'find-hashtags';
-import urlMetadata from 'url-metadata';
+  deletePostById,
+} from "../repositories/postsRepository.js";
+import findHashtags from "find-hashtags";
+import urlMetadata from "url-metadata";
 
 const DEFAULT_POSTS_LIMIT = 20;
 
@@ -112,4 +113,16 @@ async function toggleLikePost(req, res) {
   }
 }
 
-export { publishPost, getPosts, updatePosts, toggleLikePost };
+const deletePost = async (req, res) => {
+  const { id: postId } = req.params;
+  const userId = res.locals?.user?.id;
+  try {
+    await deletePostById({ postId, userId });
+    res.sendStatus(204);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+export { publishPost, getPosts, updatePosts, toggleLikePost, deletePost };

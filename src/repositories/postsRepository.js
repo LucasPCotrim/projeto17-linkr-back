@@ -59,6 +59,7 @@ async function getRecentPosts({ limit }) {
           LEFT JOIN likes "ll" ON ll."postId" = "pl"."id"
           JOIN users "ul" ON "ul"."id" = "ll"."userId"
         WHERE "ll"."postId" = "p"."id"
+        ORDER BY "ll"."createdAt" DESC
       )
       AS "usersWhoLiked",
       COALESCE ("v"."count", 0) AS "visitCount"

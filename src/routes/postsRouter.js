@@ -4,7 +4,7 @@ import {
   getPosts,
   updatePosts,
 } from "../controllers/postsController.js";
-import verificaToken from "../middlewares/autUser.middleware.js";
+import verificaToken from "../middlewares/authUser.middleware.js";
 import { postValidation } from "../middlewares/postsMiddleware.js";
 
 const postsRouter = Router();

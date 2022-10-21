@@ -6,5 +6,4 @@ const userRouter = express.Router();
 
 userRouter.get('/logout', postValidation, logout);
 
-
 export default userRouter;

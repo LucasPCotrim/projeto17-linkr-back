@@ -8,6 +8,9 @@ import {
   selectHashtag,
   getPostById,
   updateContentPost,
+  getUserLikeOnPostById,
+  likePostById,
+  dislikePostById,
 } from '../repositories/postsRepository.js';
 import findHashtags from 'find-hashtags';
 import urlMetadata from 'url-metadata';
@@ -91,4 +94,22 @@ async function updatePosts(req, res) {
   }
 }
 
-export { publishPost, getPosts, updatePosts };
+async function toggleLikePost(req, res) {
+  const { id } = req.params;
+  const user = res.locals.user;
+  try {
+    const result = await getUserLikeOnPostById({ postId: id, userId: user.id });
+
+    if (result.rowCount > 0) {
+      await dislikePostById({ postId: id, userId: user.id });
+    } else {
+      await likePostById({ postId: id, userId: user.id });
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
+export { publishPost, getPosts, updatePosts, toggleLikePost };

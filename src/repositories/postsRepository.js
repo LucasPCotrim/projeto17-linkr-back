@@ -59,14 +59,15 @@ async function getRecentPosts({ limit }) {
           LEFT JOIN likes "ll" ON ll."postId" = "pl"."id"
           JOIN users "ul" ON "ul"."id" = "ll"."userId"
         WHERE "ll"."postId" = "p"."id"
-      ) AS "usersWhoLiked",
-      COALESCE("v"."count", 0) AS "visitCount"
+      )
+      AS "usersWhoLiked",
+      COALESCE ("v"."count", 0) AS "visitCount"
     FROM
       posts "p"
       JOIN users "u" ON "p"."userId" = "u"."id"
       JOIN metadata "m" ON "p"."metadataId" = "m"."id"
       LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
-    ORDER BY p."createdAt" DESC
+    ORDER BY "p"."createdAt" DESC
     LIMIT $1;`,
     [limit]
   );
@@ -79,6 +80,19 @@ async function getPostById(postId) {
 async function updateContentPost(postId, content) {
   return db.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [content, postId]);
 }
+
+async function getUserLikeOnPostById({ postId, userId }) {
+  return db.query(`SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [postId, userId]);
+}
+
+async function likePostById({ postId, userId }) {
+  return db.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [userId, postId]);
+}
+
+async function dislikePostById({ postId, userId }) {
+  return db.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [postId, userId]);
+}
+
 export {
   postInsertion,
   insertLinkMetadata,
@@ -89,4 +103,7 @@ export {
   selectHashtag,
   getPostById,
   updateContentPost,
+  getUserLikeOnPostById,
+  likePostById,
+  dislikePostById,
 };

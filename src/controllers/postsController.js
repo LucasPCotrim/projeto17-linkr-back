@@ -2,7 +2,7 @@ import {
   postInsertion,
   insertLinkMetadata,
   insertPostVisits,
-  getPostsWithUserAndMetadata,
+  getRecentPosts,
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,
@@ -67,7 +67,7 @@ async function getPosts(req, res) {
   const limit = req.query.limit || DEFAULT_POSTS_LIMIT;
 
   try {
-    const posts = await getPostsWithUserAndMetadata({ limit });
+    const posts = await getRecentPosts({ limit });
     res.status(200).send(posts.rows);
   } catch (error) {
     console.log(error);

@@ -43,7 +43,7 @@ async function insertPostVisits({ postId }) {
   );
 }
 
-async function getPostsWithUserAndMetadata({ limit }) {
+async function getRecentPosts({ limit }) {
   return db.query(
     `SELECT
       "p"."id" AS "id",
@@ -83,7 +83,7 @@ export {
   postInsertion,
   insertLinkMetadata,
   insertPostVisits,
-  getPostsWithUserAndMetadata,
+  getRecentPosts,
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,

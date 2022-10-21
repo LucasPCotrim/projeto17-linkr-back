@@ -18,6 +18,9 @@ async function verificaToken(req, res, next) {
     res.locals.user = decoded;
     res.locals.token = token;
   } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) {
+      return res.send("token expirado").status(401)
+    }
     console.error(err);
     return res.sendStatus(500);
   }

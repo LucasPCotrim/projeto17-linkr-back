@@ -1,32 +1,29 @@
 import {
   postInsertion,
   insertLinkMetadata,
+  insertPostVisits,
   getPostsWithUserAndMetadata,
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,
   getPostById,
   updateContentPost,
-} from "../repositories/postsRepository.js";
-import findHashtags from "find-hashtags";
-import urlMetadata from "url-metadata";
+} from '../repositories/postsRepository.js';
+import findHashtags from 'find-hashtags';
+import urlMetadata from 'url-metadata';
 
 const DEFAULT_POSTS_LIMIT = 20;
 
 const publishPost = async (req, res) => {
   try {
     const { url, content } = req.body;
-    console.log({ url, content });
     const { user } = res.locals;
-    console.log({ user });
     const { image, title, description } = await urlMetadata(url);
-    console.log({ image, title, description });
     const insertedMetadata = await insertLinkMetadata({
       image,
       title,
       description,
     });
-
     const metadataId = insertedMetadata.rows[0].id;
 
     const insertedPost = await postInsertion({
@@ -36,6 +33,8 @@ const publishPost = async (req, res) => {
       metadataId,
     });
     const postId = insertedPost.rows[0].id;
+    insertPostVisits({ postId });
+
     const hashtags = findHashtags(content);
     const hashtagsId = [];
     if (hashtags.length !== 0) {

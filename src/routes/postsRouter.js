@@ -1,18 +1,20 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   publishPost,
   getPosts,
   updatePosts,
   toggleLikePost,
-} from '../controllers/postsController.js';
-import verificaToken from '../middlewares/authUser.middleware.js';
-import { postValidation } from '../middlewares/postsMiddleware.js';
+  deletePost,
+} from "../controllers/postsController.js";
+import verificaToken from "../middlewares/authUser.middleware.js";
+import { postValidation } from "../middlewares/postsMiddleware.js";
 
 const postsRouter = Router();
 
-postsRouter.post('/posts', postValidation, verificaToken, publishPost);
-postsRouter.get('/posts', verificaToken, getPosts);
-postsRouter.put('/posts/update', verificaToken, updatePosts);
-postsRouter.post('/posts/:id/like/toggle', verificaToken, toggleLikePost);
+postsRouter.post("/posts", postValidation, verificaToken, publishPost);
+postsRouter.get("/posts", verificaToken, getPosts);
+postsRouter.put("/posts/update", verificaToken, updatePosts);
+postsRouter.post("/posts/:id/like/toggle", verificaToken, toggleLikePost);
+postsRouter.delete("/posts/:id", verificaToken, deletePost);
 
 export { postsRouter };

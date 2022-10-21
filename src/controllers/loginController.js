@@ -27,6 +27,7 @@ async function login(req, res) {
     if (!passwordValid) {
       return res.sendStatus(401);
     }
+
     const token = jwt.sign(
       {
         name: user.rows[0].name,
@@ -44,4 +45,13 @@ async function login(req, res) {
   }
 }
 
-export { login };
+async function getUser(req, res) {
+  const user = res.locals.user;
+  try {
+    res.send(user);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export { login, getUser };

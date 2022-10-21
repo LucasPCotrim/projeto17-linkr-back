@@ -1,9 +1,16 @@
 import { Router } from "express";
-import { publishPost } from "../controllers/postsController.js";
+import {
+  publishPost,
+  getPosts,
+  updatePosts,
+} from "../controllers/postsController.js";
+import verificaToken from "../middlewares/authUserMiddleware.js";
 import { postValidation } from "../middlewares/postsMiddleware.js";
 
 const postsRouter = Router();
 
-postsRouter.post("/posts", postValidation, publishPost);
+postsRouter.post("/posts", postValidation, verificaToken, publishPost);
+postsRouter.get("/posts", getPosts);
+postsRouter.put("/posts/update", verificaToken, updatePosts);
 
 export { postsRouter };

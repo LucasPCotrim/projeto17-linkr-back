@@ -1,8 +1,8 @@
 CREATE DATABASE linkr;
 
 CREATE TABLE "users" (
-  "id" SERIAL PRIMARY KEY,
-  "name" TEXT NOT NULL,
+	"id" SERIAL PRIMARY KEY,
+	"name" TEXT NOT NULL,
 	"email" TEXT UNIQUE NOT NULL,
 	"password" TEXT NOT NULL,
 	"profilePic" TEXT NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE "sessions" (
-  "id" SERIAL PRIMARY KEY,
+	"id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
 	"token" TEXT UNIQUE NOT NULL,
 	"active" BOOLEAN DEFAULT TRUE NOT NULL,
@@ -18,41 +18,41 @@ CREATE TABLE "sessions" (
 );
 
 CREATE TABLE "hashtags" (
-  "id" SERIAL PRIMARY KEY,
+	"id" SERIAL PRIMARY KEY,
 	"name" TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE "metadata" (
-  "id" SERIAL PRIMARY KEY,
-  "image" TEXT,
-  "title" TEXT,
-  "description" TEXT
+	"id" SERIAL PRIMARY KEY,
+	"image" TEXT,
+	"title" TEXT,
+	"description" TEXT
 );
 
 CREATE TABLE "posts" (
-  "id" SERIAL PRIMARY KEY,
+	"id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES users("id"),
-  "metadataId" INTEGER NOT NULL REFERENCES metadata("id"),
+	"metadataId" INTEGER NOT NULL REFERENCES metadata("id"),
 	"url" TEXT NOT NULL,
 	"content" TEXT NOT NULL,
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "likes" (
-  "id" SERIAL PRIMARY KEY,
+	"id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
-	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
+	"postId" INTEGER NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
 	"createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "hashtagsPosts" (
-  "id" SERIAL PRIMARY KEY,
-	"postId" INTEGER NOT NULL REFERENCES posts("id"),
+	"id" SERIAL PRIMARY KEY,
+	"postId" INTEGER NOT NULL REFERENCES posts("id") ON DELETE CASCADE,
 	"hashtagId" INTEGER NOT NULL REFERENCES hashtags("id")
 );
 
 CREATE TABLE "visits" (
-  "id" SERIAL PRIMARY KEY,
-	"postId" INTEGER UNIQUE NOT NULL REFERENCES "posts"("id"),
+	"id" SERIAL PRIMARY KEY,
+	"postId" INTEGER UNIQUE NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
 	"count" INTEGER DEFAULT 0
 );

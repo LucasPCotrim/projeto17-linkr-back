@@ -24,18 +24,31 @@ async function getUserbyName(stringName) {
 async function getPostByUserId(userId, limit) {
 	return await connection.query(
 		`SELECT
-      posts.id,
-      posts.url,
-      posts.content,
-      json_build_object('name', users.name, 'email', users.email, 'profilePic', users."profilePic") AS "user",
-      json_build_object('image', metadata.image, 'title', metadata.title, 'description', metadata."description") AS "metadata"
+      "p"."id" AS "id",
+      "p"."url",
+      "p"."content",
+      json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
+      json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
+      ARRAY(
+        SELECT
+          json_build_object('name', "ul"."name", 'email', "ul"."email")
+        FROM
+          posts "pl"
+          LEFT JOIN likes "ll" ON ll."postId" = "pl"."id"
+          JOIN users "ul" ON "ul"."id" = "ll"."userId"
+        WHERE "ll"."postId" = "p"."id"
+        ORDER BY "ll"."createdAt" DESC
+      )
+      AS "usersWhoLiked",
+      COALESCE ("v"."count", 0) AS "visitCount"
     FROM
-      posts
-      JOIN users ON posts."userId" = users.id
-      JOIN metadata ON posts."metadataId" = metadata.id
-		WHERE users.id = $1
-    ORDER BY posts."createdAt" DESC
-    LIMIT $2`,
+      posts "p"
+      JOIN users "u" ON "p"."userId" = "u"."id"
+      JOIN metadata "m" ON "p"."metadataId" = "m"."id"
+      LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
+		WHERE "u"."id" = $1
+    ORDER BY "p"."createdAt" DESC
+    LIMIT $2;`,
 		[userId, limit]
 	);
 }

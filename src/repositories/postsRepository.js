@@ -35,20 +35,43 @@ async function insertLinkMetadata({ image, title, description }) {
   );
 }
 
-async function getPostsWithUserAndMetadata({ limit }) {
+async function insertPostVisits({ postId }) {
+  return db.query(
+    `INSERT INTO visits
+      ("postId")
+    VALUES
+      ($1)`,
+    [postId]
+  );
+}
+
+async function getRecentPosts({ limit }) {
   return db.query(
     `SELECT
-      posts.id,
-      posts.url,
-      posts.content,
-      json_build_object('name', users.name, 'email', users.email, 'profilePic', users."profilePic") AS "user",
-      json_build_object('image', metadata.image, 'title', metadata.title, 'description', metadata."description") AS "metadata"
+      "p"."id" AS "id",
+      "p"."url",
+      "p"."content",
+      json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
+      json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
+      ARRAY(
+        SELECT
+          json_build_object('name', "ul"."name", 'email', "ul"."email")
+        FROM
+          posts "pl"
+          LEFT JOIN likes "ll" ON ll."postId" = "pl"."id"
+          JOIN users "ul" ON "ul"."id" = "ll"."userId"
+        WHERE "ll"."postId" = "p"."id"
+        ORDER BY "ll"."createdAt" DESC
+      )
+      AS "usersWhoLiked",
+      COALESCE ("v"."count", 0) AS "visitCount"
     FROM
-      posts
-      JOIN users ON posts."userId" = users.id
-      JOIN metadata ON posts."metadataId" = metadata.id
-    ORDER BY posts."createdAt" DESC
-    LIMIT $1`,
+      posts "p"
+      JOIN users "u" ON "p"."userId" = "u"."id"
+      JOIN metadata "m" ON "p"."metadataId" = "m"."id"
+      LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
+    ORDER BY "p"."createdAt" DESC
+    LIMIT $1;`,
     [limit]
   );
 }
@@ -63,13 +86,47 @@ async function updateContentPost(postId, content) {
     postId,
   ]);
 }
+
+async function getUserLikeOnPostById({ postId, userId }) {
+  return db.query(
+    `SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`,
+    [postId, userId]
+  );
+}
+
+async function likePostById({ postId, userId }) {
+  return db.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [
+    userId,
+    postId,
+  ]);
+}
+
+async function dislikePostById({ postId, userId }) {
+  return db.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
+    postId,
+    userId,
+  ]);
+}
+
+const deletePostById = ({ postId, userId }) => {
+  return db.query(`DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`, [
+    postId,
+    userId,
+  ]);
+};
+
 export {
   postInsertion,
   insertLinkMetadata,
-  getPostsWithUserAndMetadata,
+  insertPostVisits,
+  getRecentPosts,
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,
   getPostById,
   updateContentPost,
+  getUserLikeOnPostById,
+  likePostById,
+  dislikePostById,
+  deletePostById,
 };

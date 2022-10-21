@@ -3,7 +3,7 @@ import { loginSchema } from "../schemas/loginSchema.js";
 import {
   getUserByEmail,
   insertSessions,
-} from "../repository/loginRepository.js";
+} from "../repositories/loginRepository.js";
 import jwt from "jsonwebtoken";
 
 async function login(req, res) {
@@ -36,6 +36,7 @@ async function login(req, res) {
       process.env.SECRET_TOKEN,
       { expiresIn: 7200 }
     );
+
     await insertSessions({ userId: user.rows[0].id, token });
     res.status(200).send({ token });
   } catch (error) {

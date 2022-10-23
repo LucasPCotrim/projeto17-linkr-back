@@ -1,4 +1,4 @@
-import db from "../database/database.js";
+import db from '../database/database.js';
 
 const postInsertion = ({ url, content, userId, metadataId }) => {
   return db.query(
@@ -8,20 +8,18 @@ const postInsertion = ({ url, content, userId, metadataId }) => {
 };
 
 const hashtagInsertion = (hashtag) => {
-  return db.query("INSERT INTO hashtags (name) VALUES ($1) RETURNING id;", [
-    hashtag,
-  ]);
+  return db.query('INSERT INTO hashtags (name) VALUES ($1) RETURNING id;', [hashtag]);
 };
 
 const selectHashtag = (hashtag) => {
-  return db.query("SELECT * FROM hashtags WHERE name = $1", [hashtag]);
+  return db.query('SELECT * FROM hashtags WHERE name = $1', [hashtag]);
 };
 
 const hashtagsPostsInsertion = ({ postId, hashtagId }) => {
-  return db.query(
-    `INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`,
-    [postId, hashtagId]
-  );
+  return db.query(`INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`, [
+    postId,
+    hashtagId,
+  ]);
 };
 
 async function insertLinkMetadata({ image, title, description }) {
@@ -51,20 +49,28 @@ async function getRecentPosts({ limit }) {
       "p"."id" AS "id",
       "p"."url",
       "p"."content",
-      json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
+      json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic") AS "user",
       json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
       ARRAY(
         SELECT
-          json_build_object('name', "ul"."name", 'email', "ul"."email")
+            json_build_object('name', "l_u"."name", 'email', "l_u"."email")
         FROM
-          posts "pl"
-          LEFT JOIN likes "ll" ON ll."postId" = "pl"."id"
-          JOIN users "ul" ON "ul"."id" = "ll"."userId"
-        WHERE "ll"."postId" = "p"."id"
-        ORDER BY "ll"."createdAt" DESC
-      )
-      AS "usersWhoLiked",
-      COALESCE ("v"."count", 0) AS "visitCount"
+            posts "l_p"
+            LEFT JOIN likes "l_l" ON l_l."postId" = "l_p"."id"
+            JOIN users "l_u" ON "l_u"."id" = "l_l"."userId"
+        WHERE "l_l"."postId" = "p"."id"
+        ORDER BY "l_l"."createdAt" DESC
+      ) AS "usersWhoLiked",
+      COALESCE ("v"."count", 0) AS "visitCount",
+      ARRAY(
+        SELECT
+          json_build_object('id',"h_h"."id", 'name', "h_h"."name")
+        FROM
+          "posts" "h_p"
+          JOIN "hashtagsPosts" "h_hp" ON "h_p"."id" = "h_hp"."postId"
+          JOIN "hashtags" "h_h" ON "h_hp"."hashtagId" = "h_h"."id"
+        WHERE "h_p"."id" = "p"."id"
+      ) AS "hashtagsList"
     FROM
       posts "p"
       JOIN users "u" ON "p"."userId" = "u"."id"
@@ -81,38 +87,23 @@ async function getPostById(postId) {
 }
 
 async function updateContentPost(postId, content) {
-  return db.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [
-    content,
-    postId,
-  ]);
+  return db.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [content, postId]);
 }
 
 async function getUserLikeOnPostById({ postId, userId }) {
-  return db.query(
-    `SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`,
-    [postId, userId]
-  );
+  return db.query(`SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [postId, userId]);
 }
 
 async function likePostById({ postId, userId }) {
-  return db.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [
-    userId,
-    postId,
-  ]);
+  return db.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [userId, postId]);
 }
 
 async function dislikePostById({ postId, userId }) {
-  return db.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
-    postId,
-    userId,
-  ]);
+  return db.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [postId, userId]);
 }
 
 const deletePostById = ({ postId, userId }) => {
-  return db.query(`DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`, [
-    postId,
-    userId,
-  ]);
+  return db.query(`DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`, [postId, userId]);
 };
 
 export {

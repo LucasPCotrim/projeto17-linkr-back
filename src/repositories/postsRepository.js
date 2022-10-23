@@ -49,7 +49,7 @@ async function getRecentPosts({ limit }) {
       "p"."id" AS "id",
       "p"."url",
       "p"."content",
-      json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic") AS "user",
+      json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
       json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
       ARRAY(
         SELECT

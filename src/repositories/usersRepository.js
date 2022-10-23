@@ -14,10 +14,12 @@ async function getUserbyId(userId) {
   );
 }
 
-async function getUserbyName(stringName) {
+async function getUsersbyName(stringName, limit) {
   stringName += '%';
-  return await connection.query(`SElECT * FROM users WHERE name ILIKE $1;`,
-    [stringName]
+  return await connection.query(`SElECT * FROM users 
+    WHERE name ILIKE $1
+    LIMIT $2;`,
+    [stringName, limit]
   );
 }
 
@@ -54,7 +56,7 @@ async function getPostByUserId(userId, limit) {
 }
 
 const usersRepository = {
-  getUserbyId, createUser, getUserbyName, getPostByUserId
+  getUserbyId, createUser, getUsersbyName, getPostByUserId
 }
 
 export default usersRepository

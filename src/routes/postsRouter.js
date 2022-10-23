@@ -6,7 +6,7 @@ import {
   toggleLikePost,
   deletePost,
 } from "../controllers/postsController.js";
-import verificaToken from "../middlewares/authUser.middleware.js";
+import verificaToken from "../middlewares/authUserMiddleware.js";
 import { postValidation } from "../middlewares/postsMiddleware.js";
 
 const postsRouter = Router();

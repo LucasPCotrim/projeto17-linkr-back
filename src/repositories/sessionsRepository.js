@@ -18,11 +18,11 @@ async function getSession(token) {
   );
 }
 
-async function logoutUser(userId) {
+async function logoutUser(token) {
   return await connection.query(
     `
-    DELETE FROM sessions WHERE "userId"=$1;`,
-    [userId]
+    DELETE FROM sessions WHERE "token"=$1;`,
+    [token]
   );
 }
 

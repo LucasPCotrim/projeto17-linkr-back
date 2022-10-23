@@ -1,5 +1,5 @@
-import sessionRepository from '../repositories/sessions.repository.js';
-import jwt from 'jsonwebtoken';
+import sessionRepository from "../repositories/sessionsRepository.js";
+import jwt from "jsonwebtoken";
 
 async function verificaToken(req, res, next) {
   const authorization = req.headers.authorization;
@@ -17,7 +17,11 @@ async function verificaToken(req, res, next) {
     }
 
     res.locals.user = decoded;
+    res.locals.token = token;
   } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) {
+      return res.send("token expirado").status(401)
+    }
     console.error(err);
     return res.sendStatus(500);
   }

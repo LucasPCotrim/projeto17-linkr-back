@@ -1,10 +1,9 @@
-import sessionsRepository from "../../repositories/sessions.repository.js";
+import sessionsRepository from "../../repositories/sessionsRepository.js";
 
 async function logout(req, res) {
-  const userId = res.locals.user.id;
-
+  const token = res.locals.token;
   try {
-    await sessionsRepository.logoutUser(userId);
+    await sessionsRepository.logoutUser(token);
     return res.sendStatus(200);
   } catch (err) {
     console.error(err);

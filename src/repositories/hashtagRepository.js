@@ -1,4 +1,4 @@
-import connection from "../database/database.js";
+import connection from '../database/database.js';
 
 async function getTrendingHashtags() {
   return await connection.query(
@@ -7,9 +7,7 @@ async function getTrendingHashtags() {
 }
 
 async function checkIfHashtagExists(hashtag) {
-  return await connection.query(`SELECT * FROM hashtags WHERE name = ($1);`, [
-    hashtag,
-  ]);
+  return await connection.query(`SELECT * FROM hashtags WHERE name = ($1);`, [hashtag]);
 }
 
 async function getHashtagByName(name) {
@@ -31,7 +29,16 @@ async function getHashtagByName(name) {
     ORDER BY "ll"."createdAt" DESC
   )
   AS "usersWhoLiked",
-  COALESCE ("v"."count", 0) AS "visitCount"
+  COALESCE ("v"."count", 0) AS "visitCount",
+  ARRAY(
+    SELECT
+      json_build_object('id',"h_h"."id", 'name', "h_h"."name")
+    FROM
+      "posts" "h_p"
+      JOIN "hashtagsPosts" "h_hp" ON "h_p"."id" = "h_hp"."postId"
+      JOIN "hashtags" "h_h" ON "h_hp"."hashtagId" = "h_h"."id"
+    WHERE "h_p"."id" = "p"."id"
+  ) AS "hashtagsList"
 FROM
   hashtags JOIN "hashtagsPosts" ON hashtags.id = "hashtagsPosts"."hashtagId" 
   JOIN

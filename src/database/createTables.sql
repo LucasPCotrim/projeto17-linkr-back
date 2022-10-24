@@ -56,3 +56,24 @@ CREATE TABLE "visits" (
 	"postId" INTEGER UNIQUE NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
 	"count" INTEGER DEFAULT 0
 );
+
+CREATE TABLE "comments" (
+  "id" SERIAL PRIMARY KEY,
+  "postId" INTEGER NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
+  "userId" INTEGER NOT NULL REFERENCES "users"("id"),
+  "content" TEXT NOT NULL,
+);
+
+CREATE TABLE "followers" (
+  "id" SERIAL PRIMARY KEY,
+  "userId" INTEGER NOT NULL REFERENCES "users"("id"),
+  "followerId" INTEGER NOT NULL REFERENCES "users"("id"),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE "reposts" (
+  "id" SERIAL PRIMARY KEY,
+  "userId" INTEGER NOT NULL REFERENCES "users"("id"),
+  "postId" INTEGER NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);

@@ -5,9 +5,13 @@ import {
   updatePosts,
   toggleLikePost,
   deletePost,
+  insertComment,
 } from "../controllers/postsController.js";
 import verificaToken from "../middlewares/authUserMiddleware.js";
-import { postValidation } from "../middlewares/postsMiddleware.js";
+import {
+  commentValidation,
+  postValidation,
+} from "../middlewares/postsMiddleware.js";
 
 const postsRouter = Router();
 
@@ -16,5 +20,11 @@ postsRouter.get("/posts", verificaToken, getPosts);
 postsRouter.put("/posts/update", verificaToken, updatePosts);
 postsRouter.post("/posts/:id/like/toggle", verificaToken, toggleLikePost);
 postsRouter.delete("/posts/:id", verificaToken, deletePost);
+postsRouter.post(
+  "/posts/comments/:id",
+  commentValidation,
+  verificaToken,
+  insertComment
+);
 
 export { postsRouter };

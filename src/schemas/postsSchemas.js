@@ -6,6 +6,11 @@ const postsSchema = Joi.object({
   content: Joi.string().allow("", null),
 });
 
-const postValidator = validator(postsSchema);
+const commentSchema = Joi.object({
+  content: Joi.string(),
+});
 
-export { postValidator };
+const postValidator = validator(postsSchema);
+const commentValidator = validator(commentSchema);
+
+export { postValidator, commentValidator };

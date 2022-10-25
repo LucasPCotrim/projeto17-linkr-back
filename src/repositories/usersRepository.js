@@ -55,6 +55,23 @@ async function getPostByUserId(userId, limit) {
   );
 }
 
+async function followUser(userId, followerId) {
+  return await connection.query(
+    `SELECT * FROM followers f
+      WHERE f."userId" = $1 
+      AND f."followerId" = $2;`,
+    [userId, followerId]
+  );
+}
+async function unFollowUser(userId, followerId) {
+  return await connection.query(
+    `DELEE FROM followers f
+        WHERE f."userId" = $1 
+        AND f."followerId" = $2;`,
+    [userId, followerId]
+  );
+}
+
 const usersRepository = {
   getUserbyId, createUser, getUsersbyName, getPostByUserId
 }

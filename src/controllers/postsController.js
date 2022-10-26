@@ -142,7 +142,6 @@ const insertComment = async (req, res) => {
 
 const getComments = async (req, res) => {
   const { id: postId } = req.params;
-
   try {
     const comments = (await getCommentsById({ postId })).rows;
     res.status(200).send(comments);

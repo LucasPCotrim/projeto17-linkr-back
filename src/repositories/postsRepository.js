@@ -53,17 +53,17 @@ async function getRecentPosts({ limit }) {
       "p"."content",
       json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
       json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
-      ARRAY(
-        SELECT
-            json_build_object('name', "l_u"."name", 'email', "l_u"."email")
-        FROM
-            posts "l_p"
-            LEFT JOIN likes "l_l" ON l_l."postId" = "l_p"."id"
-            JOIN users "l_u" ON "l_u"."id" = "l_l"."userId"
-        WHERE "l_l"."postId" = "p"."id"
-        ORDER BY "l_l"."createdAt" DESC
-      ) AS "usersWhoLiked",
-      COALESCE ("v"."count", 0) AS "visitCount",
+        ARRAY(
+          SELECT
+              json_build_object('name', "l_u"."name", 'email', "l_u"."email")
+          FROM
+              posts "l_p"
+              LEFT JOIN likes "l_l" ON l_l."postId" = "l_p"."id"
+              JOIN users "l_u" ON "l_u"."id" = "l_l"."userId"
+          WHERE "l_l"."postId" = "p"."id"
+          ORDER BY "l_l"."createdAt" DESC
+        ) AS "usersWhoLiked",
+        COALESCE ("v"."count", 0) AS "visitCount",
       ARRAY(
         SELECT
           json_build_object('id',"h_h"."id", 'name', "h_h"."name")
@@ -131,9 +131,21 @@ const insertCommentOnPost = ({ postId, userId, content }) => {
 };
 const getCommentsById = ({ postId }) => {
   return db.query(
-    `SELECT comments.id,comments."userId", comments."postId", comments.content, users.name, users."profilePic" 
-  FROM comments JOIN users ON comments."userId" = users.id
-  WHERE comments."postId" = $1;`,
+    `SELECT comments.id,comments."userId", comments."postId", comments.content,comments."createdAt", users.name, users."profilePic", followers."followerId",
+    (
+              SELECT
+                  COUNT(comments."userId") AS "commentsCount"
+              FROM
+                 comments
+                  JOIN users ON comments."userId" = users.id
+              WHERE comments."postId" = $1
+            ) AS "commentsCount"
+      FROM comments JOIN users ON comments."userId" = users.id
+      LEFT JOIN followers ON comments."userId" = followers."followerId"
+      WHERE comments."postId" = $1
+      GROUP BY comments.id, comments.content,comments."createdAt", users.name,users."profilePic",followers."followerId"
+      ORDER BY comments."createdAt" ASC;
+      `,
     [postId]
   );
 };

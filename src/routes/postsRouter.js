@@ -6,6 +6,7 @@ import {
   toggleLikePost,
   deletePost,
   insertComment,
+  getComments,
 } from "../controllers/postsController.js";
 import verificaToken from "../middlewares/authUserMiddleware.js";
 import {
@@ -26,6 +27,6 @@ postsRouter.post(
   verificaToken,
   insertComment
 );
-postsRouter.get("/posts/comments/:id", verificaToken, insertComment);
+postsRouter.get("/posts/comments/:id", verificaToken, getComments);
 
 export { postsRouter };

@@ -16,9 +16,15 @@ async function getUserbyId(userId) {
 
 async function getUsersbyName(stringName, limit) {
   stringName += '%';
-  return await connection.query(`SElECT * FROM users 
-    WHERE name ILIKE $1
-    LIMIT $2;`,
+  return await connection.query(`
+    SElECT us.*,
+      COALESCE (COUNT(f."id"), 0) AS "follow"
+        FROM users "us"
+        LEFT JOIN followers f ON f."userId" = us.id
+        WHERE us.name ILIKE $1
+	      GROUP BY us.id
+	      ORDER BY follow DESC, name
+        LIMIT $2;`,
     [stringName, limit]
   );
 }
@@ -63,6 +69,15 @@ async function followUser(userId, followerId) {
     [userId, followerId]
   );
 }
+
+async function follow(userId, followerId) {
+  return await connection.query(
+    `INSERT INTO followers ("userId", "followerId") 
+      VALUES ($1, $2);`,
+    [userId, followerId]
+  );
+}
+
 async function unFollowUser(userId, followerId) {
   return await connection.query(
     `DELEE FROM followers f

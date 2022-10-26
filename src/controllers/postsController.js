@@ -14,6 +14,8 @@ import {
   deletePostById,
   getRepostByPostId,
   insertRepost,
+  getRepostByUserId,
+  getRepostByUserIdandPostId,
 } from "../repositories/postsRepository.js";
 import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
 import findHashtags from "find-hashtags";
@@ -154,9 +156,13 @@ const repost = async (req, res) => {
   const user = res.locals.user;
   const { id: postId } = req.params;
   try {
-    const existRepost = await getRepostByPostId(postId);
+    const existRepost = await getRepostByUserIdandPostId(user.id, postId);
     if (existRepost.rowCount !== 0) {
-      return res.sendStatus(409);
+      return res.status(409).send("can't repost the same post again");
+    }
+    const post = await getPostById(postId);
+    if (post.rows[0].userId === user.id) {
+      return res.status(401).send("Unable to repost your own post");
     }
     await insertRepost({ userId: user.id, postId });
     res.sendStatus(201);
@@ -166,6 +172,18 @@ const repost = async (req, res) => {
   }
 };
 
+const getRepostsQnt = async (req, res) => {
+  const user = res.locals.user;
+  const { id: postId } = req.params;
+  try {
+    const existRepost = await getRepostByPostId(postId);
+    const qnt = existRepost.rowCount;
+    return res.status(200).send({ qnt });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
 export {
   publishPost,
   getPosts,
@@ -173,4 +191,5 @@ export {
   toggleLikePost,
   deletePost,
   repost,
+  getRepostsQnt,
 };

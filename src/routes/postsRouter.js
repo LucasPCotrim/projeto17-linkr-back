@@ -6,6 +6,7 @@ import {
   toggleLikePost,
   deletePost,
   repost,
+  getRepostsQnt,
 } from "../controllers/postsController.js";
 import verificaToken from "../middlewares/authUserMiddleware.js";
 import { postValidation } from "../middlewares/postsMiddleware.js";
@@ -18,5 +19,6 @@ postsRouter.put("/posts/update", verificaToken, updatePosts);
 postsRouter.post("/posts/:id/like/toggle", verificaToken, toggleLikePost);
 postsRouter.delete("/posts/:id", verificaToken, deletePost);
 postsRouter.post("/reposts/:id", verificaToken, repost);
+postsRouter.get("/reposts/:id", verificaToken, getRepostsQnt);
 
 export { postsRouter };

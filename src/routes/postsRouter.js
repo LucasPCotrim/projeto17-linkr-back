@@ -26,5 +26,6 @@ postsRouter.post(
   verificaToken,
   insertComment
 );
+postsRouter.get("/posts/comments/:id", verificaToken, insertComment);
 
 export { postsRouter };

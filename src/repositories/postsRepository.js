@@ -125,11 +125,18 @@ const deletePostById = ({ postId, userId }) => {
 
 const insertCommentOnPost = ({ postId, userId, content }) => {
   return db.query(
-    `INSERT INTO comments ("postId", userId", content ) VALUES ($1, $2, $3)`,
+    `INSERT INTO comments ("postId", "userId", content) VALUES ($1, $2, $3);`,
     [postId, userId, content]
   );
 };
-
+const getCommentsById = ({ postId }) => {
+  return db.query(
+    `SELECT comments.id,comments."userId", comments."postId", comments.content, users.name, users."profilePic" 
+  FROM comments JOIN users ON comments."userId" = users.id
+  WHERE comments."postId" = $1;`,
+    [postId]
+  );
+};
 export {
   postInsertion,
   insertLinkMetadata,
@@ -145,4 +152,5 @@ export {
   dislikePostById,
   deletePostById,
   insertCommentOnPost,
+  getCommentsById,
 };

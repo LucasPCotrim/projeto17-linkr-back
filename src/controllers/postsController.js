@@ -13,6 +13,7 @@ import {
   dislikePostById,
   deletePostById,
   insertCommentOnPost,
+  getCommentsById,
 } from "../repositories/postsRepository.js";
 import findHashtags from "find-hashtags";
 import urlMetadata from "url-metadata";
@@ -139,6 +140,18 @@ const insertComment = async (req, res) => {
   }
 };
 
+const getComments = async (req, res) => {
+  const { id: postId } = req.params;
+
+  try {
+    const comments = (await getCommentsById({ postId })).rows;
+    res.status(200).send(comments);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
 export {
   publishPost,
   getPosts,
@@ -146,4 +159,5 @@ export {
   toggleLikePost,
   deletePost,
   insertComment,
+  getComments,
 };

@@ -12,6 +12,8 @@ import {
   likePostById,
   dislikePostById,
   deletePostById,
+  insertCommentOnPost,
+  getCommentsById,
 } from "../repositories/postsRepository.js";
 import findHashtags from "find-hashtags";
 import urlMetadata from "url-metadata";
@@ -125,4 +127,36 @@ const deletePost = async (req, res) => {
   }
 };
 
-export { publishPost, getPosts, updatePosts, toggleLikePost, deletePost };
+const insertComment = async (req, res) => {
+  const { id: postId } = req.params;
+  const userId = res.locals?.user?.id;
+  const { content } = req.body;
+  try {
+    await insertCommentOnPost({ postId, userId, content });
+    res.sendStatus(201);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+const getComments = async (req, res) => {
+  const { id: postId } = req.params;
+  try {
+    const comments = (await getCommentsById({ postId })).rows;
+    res.status(200).send(comments);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+export {
+  publishPost,
+  getPosts,
+  updatePosts,
+  toggleLikePost,
+  deletePost,
+  insertComment,
+  getComments,
+};

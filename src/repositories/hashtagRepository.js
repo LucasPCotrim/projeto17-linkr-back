@@ -1,4 +1,4 @@
-import connection from '../database/database.js';
+import connection from "../database/database.js";
 
 async function getTrendingHashtags() {
   return await connection.query(
@@ -7,7 +7,9 @@ async function getTrendingHashtags() {
 }
 
 async function checkIfHashtagExists(hashtag) {
-  return await connection.query(`SELECT * FROM hashtags WHERE name = ($1);`, [hashtag]);
+  return await connection.query(`SELECT * FROM hashtags WHERE name = ($1);`, [
+    hashtag,
+  ]);
 }
 
 async function getHashtagByName(name) {
@@ -52,4 +54,16 @@ async function getHashtagByName(name) {
   );
 }
 
-export { getTrendingHashtags, checkIfHashtagExists, getHashtagByName };
+async function deleteOldHashtags(postId) {
+  return await connection.query(
+    `DELETE FROM "hashtagsPosts" WHERE "postId" = $1;`,
+    [postId]
+  );
+}
+
+export {
+  getTrendingHashtags,
+  checkIfHashtagExists,
+  getHashtagByName,
+  deleteOldHashtags,
+};

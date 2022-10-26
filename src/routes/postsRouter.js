@@ -5,6 +5,8 @@ import {
   updatePosts,
   toggleLikePost,
   deletePost,
+  repost,
+  getRepostsQnt,
   insertComment,
   getComments,
 } from "../controllers/postsController.js";
@@ -21,6 +23,8 @@ postsRouter.get("/posts", verificaToken, getPosts);
 postsRouter.put("/posts/update", verificaToken, updatePosts);
 postsRouter.post("/posts/:id/like/toggle", verificaToken, toggleLikePost);
 postsRouter.delete("/posts/:id", verificaToken, deletePost);
+postsRouter.post("/reposts/:id", verificaToken, repost);
+postsRouter.get("/reposts/:id", verificaToken, getRepostsQnt);
 postsRouter.post(
   "/posts/comments/:id",
   commentValidation,

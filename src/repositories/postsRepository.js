@@ -188,6 +188,35 @@ async function insertRepost({ userId, postId }) {
     postId,
   ]);
 }
+
+const insertCommentOnPost = ({ postId, userId, content }) => {
+  return db.query(
+    `INSERT INTO comments ("postId", "userId", content) VALUES ($1, $2, $3);`,
+    [postId, userId, content]
+  );
+};
+
+const getCommentsById = ({ postId }) => {
+  return db.query(
+    `SELECT comments.id,comments."userId", comments."postId", comments.content,comments."createdAt", users.name, users."profilePic", followers."followerId",
+    (
+              SELECT
+                  COUNT(comments."userId") AS "commentsCount"
+              FROM
+                 comments
+                  JOIN users ON comments."userId" = users.id
+              WHERE comments."postId" = $1
+            ) AS "commentsCount"
+      FROM comments JOIN users ON comments."userId" = users.id
+      LEFT JOIN followers ON comments."userId" = followers."followerId"
+      WHERE comments."postId" = $1
+      GROUP BY comments.id, comments.content,comments."createdAt", users.name,users."profilePic",followers."followerId"
+      ORDER BY comments."createdAt" ASC;
+      `,
+    [postId]
+  );
+};
+
 export {
   postInsertion,
   insertLinkMetadata,
@@ -206,4 +235,6 @@ export {
   insertRepost,
   getRepostByUserId,
   getRepostByUserIdandPostId,
+  insertCommentOnPost,
+  getCommentsById,
 };

@@ -14,8 +14,9 @@ import {
   deletePostById,
   getRepostByPostId,
   insertRepost,
-  getRepostByUserId,
   getRepostByUserIdandPostId,
+  insertCommentOnPost,
+  getCommentsById,
 } from "../repositories/postsRepository.js";
 import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
 import findHashtags from "find-hashtags";
@@ -184,6 +185,31 @@ const getRepostsQnt = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+const insertComment = async (req, res) => {
+  const { id: postId } = req.params;
+  const userId = res.locals?.user?.id;
+  const { content } = req.body;
+  try {
+    await insertCommentOnPost({ postId, userId, content });
+    res.sendStatus(201);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+const getComments = async (req, res) => {
+  const { id: postId } = req.params;
+  try {
+    const comments = (await getCommentsById({ postId })).rows;
+    res.status(200).send(comments);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
 export {
   publishPost,
   getPosts,
@@ -192,4 +218,6 @@ export {
   deletePost,
   repost,
   getRepostsQnt,
+  insertComment,
+  getComments,
 };

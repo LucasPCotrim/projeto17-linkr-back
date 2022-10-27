@@ -1,26 +1,27 @@
 import connection from '../database/database.js';
 
 async function createUser(name, email, password, profilePic) {
-  return await connection.query(`
+  return await connection.query(
+    `
     INSERT INTO users 
     	(name, email, password, "profilePic") 
     	VALUES ($1, $2, $3, $4);`,
-    [name, email, password, profilePic])
+    [name, email, password, profilePic]
+  );
 }
 
 async function getUserbyId(userId) {
-  return await connection.query(`SElECT * FROM users WHERE id = $1;`,
-    [userId]
-  );
+  return await connection.query(`SElECT * FROM users WHERE id = $1;`, [userId]);
 }
 
 async function getUsersbyName(userId, stringName, limit) {
   stringName += '%';
-  return await connection.query(`
-    SElECT us.*,
+  return await connection.query(
+    `
+    SELECT us.*,
       COALESCE (COUNT(f."id"), 0) AS "follow"
         FROM users "us"
-        LEFT JOIN (SELECT * FROM followers WHERE "userId" = $1) f ON f."followerId" = us.id
+        LEFT JOIN (SELECT * FROM followers WHERE "followerId" = $1) f ON f."userId" = us.id
       WHERE us.name ILIKE $2
       GROUP BY us.id
 		  ORDER BY follow DESC, name
@@ -108,16 +109,17 @@ async function getPostByUserId(userId, limit) {
     AS results
       ORDER BY "createdAt" DESC
       LIMIT $2;
-    `, [userId, limit]
+    `,
+    [userId, limit]
   );
 }
 
-async function followUser(userId, followerId) {
+async function followUser(userId, targetUser) {
   return await connection.query(
     `SELECT * FROM followers f
       WHERE f."userId" = $1 
       AND f."followerId" = $2;`,
-    [userId, followerId]
+    [targetUser, userId]
   );
 }
 
@@ -139,7 +141,10 @@ async function unFollowUser(userId, followerId) {
 }
 
 const usersRepository = {
-  getUserbyId, createUser, getUsersbyName, getPostByUserId
-}
+  getUserbyId,
+  createUser,
+  getUsersbyName,
+  getPostByUserId,
+};
 
-export default usersRepository
+export default usersRepository;

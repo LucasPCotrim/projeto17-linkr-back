@@ -17,6 +17,7 @@ import {
   getRepostByUserIdandPostId,
   insertCommentOnPost,
   getCommentsById,
+  getRecentPostsTimeline,
 } from "../repositories/postsRepository.js";
 import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
 import findHashtags from "find-hashtags";
@@ -75,9 +76,10 @@ const publishPost = async (req, res) => {
 
 async function getPosts(req, res) {
   const limit = req.query.limit || DEFAULT_POSTS_LIMIT;
-
+  const userId = res.locals.user.id;
   try {
-    const posts = await getRecentPosts({ limit });
+    /* const posts = await getRecentPosts({ limit }); */
+    const posts = await getRecentPostsTimeline({ userId, limit });
     res.status(200).send(posts.rows);
   } catch (error) {
     console.log(error);

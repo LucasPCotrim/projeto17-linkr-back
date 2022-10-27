@@ -43,7 +43,7 @@ async function insertPostVisits({ postId }) {
   );
 }
 
-async function getPostsWithLimitAndOffset({ userId, limit }) {
+async function getPostsWithLimitAndOffset({ userId, limit, offset }) {
   return db.query(
     `SELECT "userWhoRepost", "nameUserWhoRepost", "id", "url", "content" , "user", "metadata", "usersWhoLiked", "visitCount", "hashtagsList", "createdAt" FROM(SELECT
       "p"."createdAt" AS "createdAt",
@@ -122,7 +122,7 @@ async function getPostsWithLimitAndOffset({ userId, limit }) {
       LEFT JOIN users "u2" ON "r"."userId" = "u2"."id")
     AS results
       ORDER BY "createdAt" DESC
-      LIMIT $2;
+      LIMIT $2
       OFFSET $3;
 	`,
     [userId, limit, offset]

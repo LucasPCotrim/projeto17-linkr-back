@@ -45,7 +45,7 @@ async function insertPostVisits({ postId }) {
   );
 }
 
-async function getRecentPosts({ limit }) {
+async function getRecentPosts({ limit, userId }) {
   return db.query(
     `SELECT "userWhoRepost", "nameUserWhoRepost", "id", "url", "content" , "user", "metadata", "usersWhoLiked", "visitCount", "hashtagsList", "createdAt" FROM(SELECT
       "p"."createdAt" AS "createdAt",
@@ -83,6 +83,8 @@ async function getRecentPosts({ limit }) {
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
       LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
       LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
+	  JOIN followers "f" ON "p"."userId" = "f"."userId" or "p"."userId" = "f"."followerId"
+	  WHERE "f"."followerId" = $2
       UNION ALL
       SELECT
       "r"."createdAt" AS "createdAt",
@@ -119,12 +121,15 @@ async function getRecentPosts({ limit }) {
         JOIN metadata "m" ON "p"."metadataId" = "m"."id"
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
       RIGHT JOIN reposts "r" ON "r"."postId" = "p"."id"
-      LEFT JOIN users "u2" ON "r"."userId" = "u2"."id")
+      LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
+	  JOIN followers "f" ON "r"."userId" = "f"."userId" or "r"."userId" = "f"."followerId"
+	  WHERE "f"."followerId" = $2
+	  )
     AS results
       ORDER BY "createdAt" DESC
       LIMIT $1;
 	`,
-    [limit]
+    [limit, userId]
   );
 }
 

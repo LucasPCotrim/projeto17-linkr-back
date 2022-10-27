@@ -75,9 +75,10 @@ const publishPost = async (req, res) => {
 
 async function getPosts(req, res) {
   const limit = req.query.limit || DEFAULT_POSTS_LIMIT;
+  const userId = res.locals?.user?.id;
 
   try {
-    const posts = await getRecentPosts({ limit });
+    const posts = await getRecentPosts({ limit, userId });
     res.status(200).send(posts.rows);
   } catch (error) {
     console.log(error);

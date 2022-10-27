@@ -5,8 +5,6 @@ const validateFollow = async (req, res, next) => {
   const { followerId } = req.query;
   const { userId } = req.params;
 
-  console.log(userId, followerId);
-
   if (!userId || !followerId) return res.sendStatus(422);
 
   try {

@@ -17,10 +17,10 @@ import {
   getRepostByUserIdandPostId,
   insertCommentOnPost,
   getCommentsById,
-} from '../repositories/postsRepository.js';
-import { deleteOldHashtags } from '../repositories/hashtagRepository.js';
-import findHashtags from 'find-hashtags';
-import urlMetadata from 'url-metadata';
+} from "../repositories/postsRepository.js";
+import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
+import findHashtags from "find-hashtags";
+import urlMetadata from "url-metadata";
 
 const DEFAULT_POSTS_LIMIT = 20;
 
@@ -165,7 +165,7 @@ const repost = async (req, res) => {
     }
     const post = await getPostById(postId);
     if (post.rows[0].userId === user.id) {
-      return res.status(401).send('Unable to repost your own post');
+      return res.status(401).send("Unable to repost your own post");
     }
     await insertRepost({ userId: user.id, postId });
     res.sendStatus(201);

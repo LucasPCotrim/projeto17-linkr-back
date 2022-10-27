@@ -5,7 +5,6 @@ import {
 
 async function checkFollow(req, res) {
   const { follows } = res.locals;
-  console.log(follows);
 
   res.status(200).send({ follows: follows });
 }
@@ -21,7 +20,7 @@ async function registerFollower(req, res) {
 async function unfollow(req, res) {
   const { followerId } = req.query;
   const { userId } = req.params;
-  console.log(followerId, userId);
+
   await deleteFollower(userId, followerId);
 
   res.sendStatus(200);

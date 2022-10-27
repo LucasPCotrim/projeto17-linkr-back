@@ -12,7 +12,13 @@ import {
   likePostById,
   dislikePostById,
   deletePostById,
+  getRepostByPostId,
+  insertRepost,
+  getRepostByUserIdandPostId,
+  insertCommentOnPost,
+  getCommentsById,
 } from "../repositories/postsRepository.js";
+import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
 import findHashtags from "find-hashtags";
 import urlMetadata from "url-metadata";
 
@@ -88,6 +94,28 @@ async function updatePosts(req, res) {
       return res.sendStatus(401);
     }
     await updateContentPost(postId, content);
+
+    const hashtags = findHashtags(content);
+    const hashtagsId = [];
+    if (hashtags.length !== 0) {
+      for (let i = 0; i < hashtags.length; i++) {
+        const isRepeatedHashtag = (await selectHashtag(hashtags[i])).rows[0];
+        if (isRepeatedHashtag) {
+          hashtagsId.push(isRepeatedHashtag.id);
+          continue;
+        }
+        let hashtag = await hashtagInsertion(hashtags[i]);
+        hashtagsId.push(hashtag.rows[0].id);
+      }
+      deleteOldHashtags(postId);
+      for (let i = 0; i < hashtagsId.length; i++) {
+        hashtagsPostsInsertion({
+          postId,
+          hashtagId: hashtagsId[i],
+        });
+      }
+    }
+
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -125,4 +153,71 @@ const deletePost = async (req, res) => {
   }
 };
 
-export { publishPost, getPosts, updatePosts, toggleLikePost, deletePost };
+const repost = async (req, res) => {
+  const user = res.locals.user;
+  const { id: postId } = req.params;
+  try {
+    const existRepost = await getRepostByUserIdandPostId(user.id, postId);
+    if (existRepost.rowCount !== 0) {
+      return res.status(409).send("can't repost the same post again");
+    }
+    const post = await getPostById(postId);
+    if (post.rows[0].userId === user.id) {
+      return res.status(401).send("Unable to repost your own post");
+    }
+    await insertRepost({ userId: user.id, postId });
+    res.sendStatus(201);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+const getRepostsQnt = async (req, res) => {
+  const user = res.locals.user;
+  const { id: postId } = req.params;
+  try {
+    const existRepost = await getRepostByPostId(postId);
+    const qnt = existRepost.rowCount;
+    return res.status(200).send({ qnt });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+const insertComment = async (req, res) => {
+  const { id: postId } = req.params;
+  const userId = res.locals?.user?.id;
+  const { content } = req.body;
+  try {
+    await insertCommentOnPost({ postId, userId, content });
+    res.sendStatus(201);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+const getComments = async (req, res) => {
+  const { id: postId } = req.params;
+  try {
+    const comments = (await getCommentsById({ postId })).rows;
+    res.status(200).send(comments);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+export {
+  publishPost,
+  getPosts,
+  updatePosts,
+  toggleLikePost,
+  deletePost,
+  repost,
+  getRepostsQnt,
+  insertComment,
+  getComments,
+};

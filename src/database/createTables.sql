@@ -62,6 +62,7 @@ CREATE TABLE "comments" (
   "postId" INTEGER NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
   "userId" INTEGER NOT NULL REFERENCES "users"("id"),
   "content" TEXT NOT NULL,
+   "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "followers" (

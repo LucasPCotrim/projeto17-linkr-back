@@ -2,7 +2,7 @@ import {
   postInsertion,
   insertLinkMetadata,
   insertPostVisits,
-  getRecentPosts,
+  getPostsWithLimitAndOffset,
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,
@@ -75,10 +75,11 @@ const publishPost = async (req, res) => {
 
 async function getPosts(req, res) {
   const limit = req.query.limit || DEFAULT_POSTS_LIMIT;
-  const userId = res.locals?.user?.id;
+  const offset = req.query.offset || 0;
 
+  const userId = res.locals.user.id;
   try {
-    const posts = await getRecentPosts({ limit, userId });
+    const posts = await getPostsWithLimitAndOffset({ userId, limit, offset });
     res.status(200).send(posts.rows);
   } catch (error) {
     console.log(error);

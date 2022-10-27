@@ -45,7 +45,7 @@ async function insertPostVisits({ postId }) {
   );
 }
 
-async function getRecentPosts({ limit, userId }) {
+async function getPostsWithLimitAndOffset({ userId, limit, offset }) {
   return db.query(
     `SELECT "userWhoRepost", "nameUserWhoRepost", "id", "url", "content" , "user", "metadata", "usersWhoLiked", "visitCount", "hashtagsList", "createdAt" FROM(SELECT
       "p"."createdAt" AS "createdAt",
@@ -83,8 +83,8 @@ async function getRecentPosts({ limit, userId }) {
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
       LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
       LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
-	  JOIN followers "f" ON "p"."userId" = "f"."userId" or "p"."userId" = "f"."followerId"
-	  WHERE "f"."followerId" = $2
+	    LEFT JOIN followers f ON f."userId" = u.id
+	    WHERE f."followerId" = $1 OR p."userId" = $1
       UNION ALL
       SELECT
       "r"."createdAt" AS "createdAt",
@@ -127,9 +127,10 @@ async function getRecentPosts({ limit, userId }) {
 	  )
     AS results
       ORDER BY "createdAt" DESC
-      LIMIT $1;
+      LIMIT $2
+      OFFSET $3;
 	`,
-    [limit, userId]
+    [userId, limit, offset]
   );
 }
 
@@ -226,7 +227,7 @@ export {
   postInsertion,
   insertLinkMetadata,
   insertPostVisits,
-  getRecentPosts,
+  getPostsWithLimitAndOffset,
   hashtagInsertion,
   hashtagsPostsInsertion,
   selectHashtag,

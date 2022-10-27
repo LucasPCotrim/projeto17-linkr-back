@@ -1,31 +1,29 @@
-import db from "../database/database.js";
+import connection from '../database/database.js';
 
 const postInsertion = ({ url, content, userId, metadataId }) => {
-  return db.query(
+  return connection.query(
     `INSERT INTO posts (url,content,"userId","metadataId") VALUES ($1, $2, $3, $4) RETURNING id;`,
     [url, content, userId, metadataId]
   );
 };
 
 const hashtagInsertion = (hashtag) => {
-  return db.query("INSERT INTO hashtags (name) VALUES ($1) RETURNING id;", [
-    hashtag,
-  ]);
+  return connection.query('INSERT INTO hashtags (name) VALUES ($1) RETURNING id;', [hashtag]);
 };
 
 const selectHashtag = (hashtag) => {
-  return db.query("SELECT * FROM hashtags WHERE name = $1", [hashtag]);
+  return connection.query('SELECT * FROM hashtags WHERE name = $1', [hashtag]);
 };
 
 const hashtagsPostsInsertion = ({ postId, hashtagId }) => {
-  return db.query(
-    `INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`,
-    [postId, hashtagId]
-  );
+  return connection.query(`INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`, [
+    postId,
+    hashtagId,
+  ]);
 };
 
 async function insertLinkMetadata({ image, title, description }) {
-  return db.query(
+  return connection.query(
     `INSERT INTO metadata
       (image, title, description)
     VALUES
@@ -36,7 +34,7 @@ async function insertLinkMetadata({ image, title, description }) {
 }
 
 async function insertPostVisits({ postId }) {
-  return db.query(
+  return connection.query(
     `INSERT INTO visits
       ("postId")
     VALUES
@@ -46,7 +44,7 @@ async function insertPostVisits({ postId }) {
 }
 
 async function getPostsWithLimitAndOffset({ userId, limit, offset }) {
-  return db.query(
+  return connection.query(
     `SELECT "userWhoRepost", "nameUserWhoRepost", "id", "url", "content" , "user", "metadata", "usersWhoLiked", "visitCount", "hashtagsList", "createdAt" FROM(SELECT
       "p"."createdAt" AS "createdAt",
       null AS "userWhoRepost",
@@ -135,75 +133,69 @@ async function getPostsWithLimitAndOffset({ userId, limit, offset }) {
 }
 
 async function getPostById(postId) {
-  return db.query(`SELECT * FROM posts WHERE id = $1;`, [postId]);
+  return connection.query(`SELECT * FROM posts WHERE id = $1;`, [postId]);
 }
 
 async function updateContentPost(postId, content) {
-  return db.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [
-    content,
-    postId,
-  ]);
+  return connection.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [content, postId]);
 }
 
 async function getUserLikeOnPostById({ postId, userId }) {
-  return db.query(
-    `SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`,
-    [postId, userId]
-  );
+  return connection.query(`SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
+    postId,
+    userId,
+  ]);
 }
 
 async function likePostById({ postId, userId }) {
-  return db.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [
+  return connection.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [
     userId,
     postId,
   ]);
 }
 
 async function dislikePostById({ postId, userId }) {
-  return db.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
+  return connection.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
     postId,
     userId,
   ]);
 }
 
 const deletePostById = ({ postId, userId }) => {
-  return db.query(`DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`, [
-    postId,
-    userId,
-  ]);
+  return connection.query(`DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`, [postId, userId]);
 };
 
 async function getRepostByPostId(postId) {
-  return db.query(`SELECT * FROM reposts WHERE "postId" = $1;`, [postId]);
+  return connection.query(`SELECT * FROM reposts WHERE "postId" = $1;`, [postId]);
 }
 
 async function getRepostByUserId(userId) {
-  return db.query(`SELECT * FROM reposts WHERE "userId" = $1;`, [userId]);
+  return connection.query(`SELECT * FROM reposts WHERE "userId" = $1;`, [userId]);
 }
 
 async function getRepostByUserIdandPostId(userId, postId) {
-  return db.query(
-    `SELECT * FROM reposts WHERE "userId" = $1 AND "postId" = $2;`,
-    [userId, postId]
-  );
+  return connection.query(`SELECT * FROM reposts WHERE "userId" = $1 AND "postId" = $2;`, [
+    userId,
+    postId,
+  ]);
 }
 
 async function insertRepost({ userId, postId }) {
-  return db.query(`INSERT INTO reposts ("userId", "postId") VALUES ($1,$2);`, [
+  return connection.query(`INSERT INTO reposts ("userId", "postId") VALUES ($1,$2);`, [
     userId,
     postId,
   ]);
 }
 
 const insertCommentOnPost = ({ postId, userId, content }) => {
-  return db.query(
+  return connection.query(
     `INSERT INTO comments ("postId", "userId", content) VALUES ($1, $2, $3);`,
     [postId, userId, content]
   );
 };
 
 const getCommentsById = ({ postId }) => {
-  return db.query(
+  return connection.query(
     `SELECT comments.id,comments."userId", comments."postId", comments.content,comments."createdAt", users.name, users."profilePic", followers."followerId",
     (
               SELECT

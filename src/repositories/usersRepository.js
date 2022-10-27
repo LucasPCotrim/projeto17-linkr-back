@@ -30,7 +30,7 @@ async function getUsersbyName(userId, stringName, limit) {
   );
 }
 
-async function getPostByUserId(userId, limit, offset) {
+async function getPostByUserId({ userId, limit, offset }) {
   return await connection.query(
     `SELECT "userWhoRepost", "nameUserWhoRepost", "id", "url", "content" , "user", "metadata", "usersWhoLiked", "visitCount", "hashtagsList", "createdAt" FROM(SELECT
         "p"."createdAt" AS "createdAt",
@@ -68,7 +68,7 @@ async function getPostByUserId(userId, limit, offset) {
           LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
         LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
         LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
-        WHERE "u"."id" = $1
+        WHERE "p"."userId" = $1
         UNION ALL
         SELECT
         "r"."createdAt" AS "createdAt",

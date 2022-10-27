@@ -10,7 +10,6 @@ async function checkIfUserIsFollowingAnotherUser(userId, followerId) {
 }
 
 async function insertFollower(userId, followerId) {
-  console.log(userId, followerId);
   return await connection.query(
     `INSERT INTO followers ("userId", "followerId") 
   VALUES ($1, $2);`,

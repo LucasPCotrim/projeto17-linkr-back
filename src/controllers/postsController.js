@@ -17,10 +17,18 @@ import {
   getRepostByUserIdandPostId,
   insertCommentOnPost,
   getCommentsById,
+<<<<<<< HEAD
 } from '../repositories/postsRepository.js';
 import { deleteOldHashtags } from '../repositories/hashtagRepository.js';
 import findHashtags from 'find-hashtags';
 import urlMetadata from 'url-metadata';
+=======
+  getRecentPostsTimeline,
+} from "../repositories/postsRepository.js";
+import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
+import findHashtags from "find-hashtags";
+import urlMetadata from "url-metadata";
+>>>>>>> main
 
 const DEFAULT_POSTS_LIMIT = 20;
 
@@ -77,8 +85,9 @@ async function getPosts(req, res) {
   const limit = req.query.limit || DEFAULT_POSTS_LIMIT;
   const offset = req.query.offset || 0;
 
+  const userId = res.locals.user.id;
   try {
-    const posts = await getPostsWithLimitAndOffset({ limit, offset });
+    const posts = await getPostsWithLimitAndOffset({ userId, limit, offset });
     res.status(200).send(posts.rows);
   } catch (error) {
     console.log(error);

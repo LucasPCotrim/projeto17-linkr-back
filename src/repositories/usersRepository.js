@@ -67,6 +67,7 @@ async function getPostByUserId(userId, limit) {
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
       LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
       LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
+      WHERE "u"."id" = $1
       UNION ALL
       SELECT
       "r"."createdAt" AS "createdAt",
@@ -105,7 +106,6 @@ async function getPostByUserId(userId, limit) {
       RIGHT JOIN reposts "r" ON "r"."postId" = "p"."id"
       LEFT JOIN users "u2" ON "r"."userId" = "u2"."id")
     AS results
-        WHERE "u"."id" = $1
       ORDER BY "createdAt" DESC
       LIMIT $2;
     `, [userId, limit]

@@ -14,50 +14,101 @@ async function getUserbyId(userId) {
   );
 }
 
-async function getUsersbyName(stringName, limit) {
+async function getUsersbyName(userId, stringName, limit) {
   stringName += '%';
   return await connection.query(`
     SElECT us.*,
       COALESCE (COUNT(f."id"), 0) AS "follow"
         FROM users "us"
-        LEFT JOIN followers f ON f."userId" = us.id
-        WHERE us.name ILIKE $1
-	      GROUP BY us.id
-	      ORDER BY follow DESC, name
-        LIMIT $2;`,
-    [stringName, limit]
+        LEFT JOIN (SELECT * FROM followers WHERE "userId" = $1) f ON f."followerId" = us.id
+      WHERE us.name ILIKE $2
+      GROUP BY us.id
+		  ORDER BY follow DESC, name
+      LIMIT $3;`,
+    [userId, stringName, limit]
   );
 }
 
 async function getPostByUserId(userId, limit) {
   return await connection.query(
-    `SELECT
-      "p"."id" AS "id",
-      "p"."url",
-      "p"."content",
-      json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
-      json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
-      ARRAY(
-        SELECT
-          json_build_object('name', "ul"."name", 'email', "ul"."email")
-        FROM
-          posts "pl"
-          LEFT JOIN likes "ll" ON ll."postId" = "pl"."id"
-          JOIN users "ul" ON "ul"."id" = "ll"."userId"
-        WHERE "ll"."postId" = "p"."id"
-        ORDER BY "ll"."createdAt" DESC
-      )
-      AS "usersWhoLiked",
-      COALESCE ("v"."count", 0) AS "visitCount"
-    FROM
-      posts "p"
-      JOIN users "u" ON "p"."userId" = "u"."id"
-      JOIN metadata "m" ON "p"."metadataId" = "m"."id"
-      LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
-		WHERE "u"."id" = $1
-    ORDER BY "p"."createdAt" DESC
-    LIMIT $2;`,
-    [userId, limit]
+    `SELECT "userWhoRepost", "nameUserWhoRepost", "id", "url", "content" , "user", "metadata", "usersWhoLiked", "visitCount", "hashtagsList", "createdAt" FROM(SELECT
+      "p"."createdAt" AS "createdAt",
+      null AS "userWhoRepost",
+      null AS "nameUserWhoRepost",																																	 
+        "p"."id" AS "id",
+        "p"."url",
+        "p"."content",
+        json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
+        json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
+        ARRAY(
+          SELECT
+              json_build_object('name', "l_u"."name", 'email', "l_u"."email")
+          FROM
+              posts "l_p"
+              LEFT JOIN likes "l_l" ON l_l."postId" = "l_p"."id"
+              JOIN users "l_u" ON "l_u"."id" = "l_l"."userId"
+          WHERE "l_l"."postId" = "p"."id"
+          ORDER BY "l_l"."createdAt" DESC
+        ) AS "usersWhoLiked",
+        COALESCE ("v"."count", 0) AS "visitCount",
+        ARRAY(
+          SELECT
+            json_build_object('id',"h_h"."id", 'name', "h_h"."name")
+          FROM
+            "posts" "h_p"
+            JOIN "hashtagsPosts" "h_hp" ON "h_p"."id" = "h_hp"."postId"
+            JOIN "hashtags" "h_h" ON "h_hp"."hashtagId" = "h_h"."id"
+          WHERE "h_p"."id" = "p"."id"
+        ) AS "hashtagsList"
+      FROM
+        posts "p"
+        JOIN users "u" ON "p"."userId" = "u"."id"
+        JOIN metadata "m" ON "p"."metadataId" = "m"."id"
+        LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
+      LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
+      LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
+      WHERE "u"."id" = $1
+      UNION ALL
+      SELECT
+      "r"."createdAt" AS "createdAt",
+      "r"."userId" AS "userWhoRepost",
+      "u2".name AS "nameUserWhoRepost",
+        "p"."id" AS "id",
+        "p"."url",
+        "p"."content",
+        json_build_object('name', "u"."name", 'email', "u"."email", 'profilePic', "u"."profilePic", 'id', "u"."id") AS "user",
+        json_build_object('image', "m"."image", 'title', "m"."title", 'description', "m"."description") AS "metadata",
+        ARRAY(
+          SELECT
+              json_build_object('name', "l_u"."name", 'email', "l_u"."email")
+          FROM
+              posts "l_p"
+              LEFT JOIN likes "l_l" ON l_l."postId" = "l_p"."id"
+              JOIN users "l_u" ON "l_u"."id" = "l_l"."userId"
+          WHERE "l_l"."postId" = "p"."id"
+          ORDER BY "l_l"."createdAt" DESC
+        ) AS "usersWhoLiked",
+        COALESCE ("v"."count", 0) AS "visitCount",
+        ARRAY(
+          SELECT
+            json_build_object('id',"h_h"."id", 'name', "h_h"."name")
+          FROM
+            "posts" "h_p"
+            JOIN "hashtagsPosts" "h_hp" ON "h_p"."id" = "h_hp"."postId"
+            JOIN "hashtags" "h_h" ON "h_hp"."hashtagId" = "h_h"."id"
+          WHERE "h_p"."id" = "p"."id"
+        ) AS "hashtagsList"
+      FROM
+        posts "p"
+        JOIN users "u" ON "p"."userId" = "u"."id"
+        JOIN metadata "m" ON "p"."metadataId" = "m"."id"
+        LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
+      RIGHT JOIN reposts "r" ON "r"."postId" = "p"."id"
+      LEFT JOIN users "u2" ON "r"."userId" = "u2"."id")
+    AS results
+      ORDER BY "createdAt" DESC
+      LIMIT $2;
+    `, [userId, limit]
   );
 }
 

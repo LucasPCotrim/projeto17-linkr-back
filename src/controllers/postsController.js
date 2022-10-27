@@ -17,18 +17,10 @@ import {
   getRepostByUserIdandPostId,
   insertCommentOnPost,
   getCommentsById,
-<<<<<<< HEAD
 } from '../repositories/postsRepository.js';
 import { deleteOldHashtags } from '../repositories/hashtagRepository.js';
 import findHashtags from 'find-hashtags';
 import urlMetadata from 'url-metadata';
-=======
-  getRecentPostsTimeline,
-} from "../repositories/postsRepository.js";
-import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
-import findHashtags from "find-hashtags";
-import urlMetadata from "url-metadata";
->>>>>>> main
 
 const DEFAULT_POSTS_LIMIT = 20;
 

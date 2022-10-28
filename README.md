@@ -11,7 +11,6 @@ This is the project for the back-end of Linkr.
 ## API Documentation
 
 ### Sign-up
-
 ```
   POST /sign-up
 ```
@@ -23,8 +22,9 @@ This is the project for the back-end of Linkr.
 | `password` | `string` | Password |
 | `profilePic` | `string` | URL of user profile picture |
 
-### Log-in
 
+
+### Log-in
 ```
   POST /sign-in
 ```
@@ -34,15 +34,16 @@ This is the project for the back-end of Linkr.
 | `email` | `string` | User email |
 | `password` | `string` | Password |
 
-### Log-out
 
+
+### Log-out
 ```
   POST /logout
 ```
 #### Headers
 | Parameter   | Type       | Description                           |
 | :---------- | :--------- | :---------------------------------- |
-| `Authorization` | `string` | 'Bearer <token>' |
+| `Authorization` | `string` | 'Bearer token_string' |
 
 #### Body
 | Parameter   | Type       | Description                           |
@@ -50,6 +51,26 @@ This is the project for the back-end of Linkr.
 | `email` | `string` | User email |
 | `password` | `string` | Password |
 
+
+
+```
+  POST /logout
+```
+#### Headers
+| Parameter   | Type       | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `Authorization` | `string` | 'Bearer token_string' |
+
+#### Body
+| Parameter   | Type       | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `email` | `string` | User email |
+| `password` | `string` | Password |
+
+
+
+
+#### Documentation to be completed...
 
 
 

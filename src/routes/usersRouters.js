@@ -12,6 +12,7 @@ const userRouter = express.Router();
 
 userRouter.get("/logout", tokenValidation, logout);
 userRouter.get("/user", tokenValidation, getUser);
+userRouter.get("/userById/:id", tokenValidation, getUser);
 userRouter.get("/user/:id", tokenValidation, getPageUser);
 userRouter.get("/searchName/:stringName", tokenValidation, getUsersbyName);
 

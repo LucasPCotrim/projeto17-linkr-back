@@ -14,7 +14,7 @@ async function getUserbyId(userId) {
   return await connection.query(`SElECT * FROM users WHERE id = $1;`, [userId]);
 }
 
-async function getUsersbyName(userId, stringName, limit) {
+async function getUsersbyName(userId, stringName) {
   stringName += '%';
   return await connection.query(
     `
@@ -24,9 +24,8 @@ async function getUsersbyName(userId, stringName, limit) {
         LEFT JOIN (SELECT * FROM followers WHERE "followerId" = $1) f ON f."userId" = us.id
       WHERE us.name ILIKE $2
       GROUP BY us.id
-		  ORDER BY follow DESC, name
-      LIMIT $3;`,
-    [userId, stringName, limit]
+		  ORDER BY follow DESC, name;`,
+    [userId, stringName]
   );
 }
 

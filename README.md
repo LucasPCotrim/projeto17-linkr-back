@@ -12,7 +12,7 @@ This is the project for the back-end of Linkr.
 
 #### Sign-up
 
-```http
+```
   POST /sign-up
 ```
 
@@ -25,7 +25,7 @@ This is the project for the back-end of Linkr.
 
 #### Log-in
 
-```http
+```
   POST /sign-in
 ```
 

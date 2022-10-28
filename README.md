@@ -10,26 +10,42 @@ This is the project for the back-end of Linkr.
 
 ## API Documentation
 
-#### Sign-up
+### Sign-up
 
 ```
   POST /sign-up
 ```
-
-| Parâmetro   | Tipo       | Descrição                           |
+#### Headers
+| Parameter   | Type       | Description                           |
 | :---------- | :--------- | :---------------------------------- |
 | `name` | `string` | Username |
 | `email` | `string` | User email |
 | `password` | `string` | Password |
 | `profilePic` | `string` | URL of user profile picture |
 
-#### Log-in
+### Log-in
 
 ```
   POST /sign-in
 ```
+#### Headers
+| Parameter   | Type       | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `email` | `string` | User email |
+| `password` | `string` | Password |
 
-| Parâmetro   | Tipo       | Descrição                           |
+### Log-out
+
+```
+  POST /logout
+```
+#### Headers
+| Parameter   | Type       | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `Authorization` | `string` | 'Bearer <token>' |
+
+#### Body
+| Parameter   | Type       | Description                           |
 | :---------- | :--------- | :---------------------------------- |
 | `email` | `string` | User email |
 | `password` | `string` | Password |

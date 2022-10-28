@@ -22,7 +22,7 @@ import { deleteOldHashtags } from "../repositories/hashtagRepository.js";
 import findHashtags from "find-hashtags";
 import urlMetadata from "url-metadata";
 
-const DEFAULT_POSTS_LIMIT = 20;
+const DEFAULT_POSTS_LIMIT = 10;
 
 const publishPost = async (req, res) => {
   try {

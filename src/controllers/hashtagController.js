@@ -1,7 +1,7 @@
 import { getTrendingHashtags } from "../repositories/hashtagRepository.js";
 import { getHashtagByName } from "../repositories/hashtagRepository.js";
 
-const DEFAULT_POSTS_LIMIT = 20;
+const DEFAULT_POSTS_LIMIT = 10;
 
 async function hashtagsList(req, res) {
   try {

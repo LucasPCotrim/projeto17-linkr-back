@@ -24,6 +24,7 @@ This is the project for the back-end of Linkr.
 
 
 
+
 ### Log-in
 ```
   POST /sign-in
@@ -33,6 +34,7 @@ This is the project for the back-end of Linkr.
 | :---------- | :--------- | :---------------------------------- |
 | `email` | `string` | User email |
 | `password` | `string` | Password |
+
 
 
 
@@ -50,6 +52,7 @@ This is the project for the back-end of Linkr.
 | :---------- | :--------- | :---------------------------------- |
 | `email` | `string` | User email |
 | `password` | `string` | Password |
+
 
 
 

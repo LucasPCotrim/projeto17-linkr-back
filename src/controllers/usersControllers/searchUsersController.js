@@ -2,10 +2,9 @@ import usersRepository from "../../repositories/usersRepository.js";
 
 async function getUsersbyName(req, res) {
   const { stringName } = req.params?.stringName !== "allusers" ? req.params : { stringName: "" };
-  const limit = req.query.limit || 20;
   const userId = res.locals.user.id;
   try {
-    const listUsers = await usersRepository.getUsersbyName(userId, stringName, limit);
+    const listUsers = await usersRepository.getUsersbyName(userId, stringName);
     if (listUsers.rowCount === 0) {
       return res.send([]).status(200);
     }

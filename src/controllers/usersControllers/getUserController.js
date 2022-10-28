@@ -1,7 +1,7 @@
 import usersRepository from "../../repositories/usersRepository.js";
 
 async function getUser(req, res) {
-  const userId = res.locals.user.id;
+  const userId = parseInt(req.params.id) > 0 ? req.params.id : res.locals.user.id;
   try {
     const user = await usersRepository.getUserbyId(userId);
     if (user.rowCount === 0) {

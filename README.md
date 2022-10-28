@@ -14,7 +14,7 @@ This is the project for the back-end of Linkr.
 ```
   POST /sign-up
 ```
-#### Headers
+#### Body
 | Parameter   | Type       | Description                           |
 | :---------- | :--------- | :---------------------------------- |
 | `name` | `string` | Username |
@@ -28,7 +28,7 @@ This is the project for the back-end of Linkr.
 ```
   POST /sign-in
 ```
-#### Headers
+#### Body
 | Parameter   | Type       | Description                           |
 | :---------- | :--------- | :---------------------------------- |
 | `email` | `string` | User email |

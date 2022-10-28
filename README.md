@@ -53,23 +53,6 @@ This is the project for the back-end of Linkr.
 
 
 
-```
-  POST /logout
-```
-#### Headers
-| Parameter   | Type       | Description                           |
-| :---------- | :--------- | :---------------------------------- |
-| `Authorization` | `string` | 'Bearer token_string' |
-
-#### Body
-| Parameter   | Type       | Description                           |
-| :---------- | :--------- | :---------------------------------- |
-| `email` | `string` | User email |
-| `password` | `string` | Password |
-
-
-
-
 ### Documentation to be completed...
 
 

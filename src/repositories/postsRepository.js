@@ -79,8 +79,6 @@ async function getPostsWithLimitAndOffset({ userId, limit, offset }) {
         JOIN users "u" ON "p"."userId" = "u"."id"
         JOIN metadata "m" ON "p"."metadataId" = "m"."id"
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
-      LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
-      LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
 	    LEFT JOIN followers f ON f."userId" = u.id
 	    WHERE f."followerId" = $1 OR p."userId" = $1
       UNION ALL

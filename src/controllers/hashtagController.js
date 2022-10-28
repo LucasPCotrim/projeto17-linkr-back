@@ -1,5 +1,7 @@
-import { getTrendingHashtags } from '../repositories/hashtagRepository.js';
-import { getHashtagByName } from '../repositories/hashtagRepository.js';
+import { getTrendingHashtags } from "../repositories/hashtagRepository.js";
+import { getHashtagByName } from "../repositories/hashtagRepository.js";
+
+const DEFAULT_POSTS_LIMIT = 10;
 
 async function hashtagsList(req, res) {
   try {
@@ -17,7 +19,11 @@ async function hashtag(req, res) {
   const offset = req.query.offset || 0;
 
   try {
-    const hashtagPosts = await getHashtagByName({ hashtagName: hashtag, limit, offset });
+    const hashtagPosts = await getHashtagByName({
+      hashtagName: hashtag,
+      limit,
+      offset,
+    });
 
     res.status(200).send(hashtagPosts.rows);
   } catch (error) {

@@ -10,7 +10,7 @@ This is the project for the back-end of Linkr.
 
 ## API Documentation
 
-#### Retorna todos os itens
+#### Sign-up
 
 ```http
   POST /sign-up
@@ -22,6 +22,17 @@ This is the project for the back-end of Linkr.
 | `email` | `string` | User email |
 | `password` | `string` | Password |
 | `profilePic` | `string` | URL of user profile picture |
+
+#### Log-in
+
+```http
+  POST /sign-in
+```
+
+| Parâmetro   | Tipo       | Descrição                           |
+| :---------- | :--------- | :---------------------------------- |
+| `email` | `string` | User email |
+| `password` | `string` | Password |
 
 
 

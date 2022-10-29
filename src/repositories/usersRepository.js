@@ -103,7 +103,6 @@ async function getPostByUserId({ userId, limit, offset }) {
           LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
         RIGHT JOIN reposts "r" ON "r"."postId" = "p"."id"
         LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
-        LEFT JOIN followers "f" ON "r"."userId" = "f"."userId" or "r"."userId" = "f"."followerId"
 	      WHERE "r"."userId" = $1
       )
       AS results

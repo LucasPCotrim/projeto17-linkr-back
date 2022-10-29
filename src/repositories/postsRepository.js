@@ -1,4 +1,4 @@
-import connection from "../database/database.js";
+import connection from '../database/database.js';
 
 const postInsertion = ({ url, content, userId, metadataId }) => {
   return connection.query(
@@ -8,21 +8,18 @@ const postInsertion = ({ url, content, userId, metadataId }) => {
 };
 
 const hashtagInsertion = (hashtag) => {
-  return connection.query(
-    "INSERT INTO hashtags (name) VALUES ($1) RETURNING id;",
-    [hashtag]
-  );
+  return connection.query('INSERT INTO hashtags (name) VALUES ($1) RETURNING id;', [hashtag]);
 };
 
 const selectHashtag = (hashtag) => {
-  return connection.query("SELECT * FROM hashtags WHERE name = $1", [hashtag]);
+  return connection.query('SELECT * FROM hashtags WHERE name = $1', [hashtag]);
 };
 
 const hashtagsPostsInsertion = ({ postId, hashtagId }) => {
-  return connection.query(
-    `INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`,
-    [postId, hashtagId]
-  );
+  return connection.query(`INSERT INTO "hashtagsPosts" ("postId", "hashtagId") VALUES ($1, $2);`, [
+    postId,
+    hashtagId,
+  ]);
 };
 
 async function insertLinkMetadata({ image, title, description }) {
@@ -82,8 +79,6 @@ async function getPostsWithLimitAndOffset({ userId, limit, offset }) {
         JOIN users "u" ON "p"."userId" = "u"."id"
         JOIN metadata "m" ON "p"."metadataId" = "m"."id"
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
-      LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
-      LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
 	    LEFT JOIN followers f ON f."userId" = u.id
 	    WHERE f."followerId" = $1 OR p."userId" = $1
       UNION ALL
@@ -123,8 +118,8 @@ async function getPostsWithLimitAndOffset({ userId, limit, offset }) {
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
       LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
       LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
-      LEFT JOIN followers "f" ON "r"."userId" = "f"."userId" or "r"."userId" = "f"."followerId"
-	    WHERE "r"."userId" = $1
+      LEFT JOIN followers "f" ON "r"."userId" = "f"."userId"
+	    WHERE "r"."userId" = $1 OR "r"."userId" = "f"."userId"
 	  )
     AS results
       ORDER BY "createdAt" DESC
@@ -140,64 +135,54 @@ async function getPostById(postId) {
 }
 
 async function updateContentPost(postId, content) {
-  return connection.query(
-    `UPDATE posts SET content = $1 WHERE posts.id = $2;`,
-    [content, postId]
-  );
+  return connection.query(`UPDATE posts SET content = $1 WHERE posts.id = $2;`, [content, postId]);
 }
 
 async function getUserLikeOnPostById({ postId, userId }) {
-  return connection.query(
-    `SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`,
-    [postId, userId]
-  );
-}
-
-async function likePostById({ postId, userId }) {
-  return connection.query(
-    `INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`,
-    [userId, postId]
-  );
-}
-
-async function dislikePostById({ postId, userId }) {
-  return connection.query(
-    `DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`,
-    [postId, userId]
-  );
-}
-
-const deletePostById = ({ postId, userId }) => {
-  return connection.query(
-    `DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`,
-    [postId, userId]
-  );
-};
-
-async function getRepostByPostId(postId) {
-  return connection.query(`SELECT * FROM reposts WHERE "postId" = $1;`, [
+  return connection.query(`SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
     postId,
-  ]);
-}
-
-async function getRepostByUserId(userId) {
-  return connection.query(`SELECT * FROM reposts WHERE "userId" = $1;`, [
     userId,
   ]);
 }
 
+async function likePostById({ postId, userId }) {
+  return connection.query(`INSERT INTO likes ("userId", "postId") VALUES ($1, $2);`, [
+    userId,
+    postId,
+  ]);
+}
+
+async function dislikePostById({ postId, userId }) {
+  return connection.query(`DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2;`, [
+    postId,
+    userId,
+  ]);
+}
+
+const deletePostById = ({ postId, userId }) => {
+  return connection.query(`DELETE FROM posts WHERE "id" = $1 AND "userId" = $2;`, [postId, userId]);
+};
+
+async function getRepostByPostId(postId) {
+  return connection.query(`SELECT * FROM reposts WHERE "postId" = $1;`, [postId]);
+}
+
+async function getRepostByUserId(userId) {
+  return connection.query(`SELECT * FROM reposts WHERE "userId" = $1;`, [userId]);
+}
+
 async function getRepostByUserIdandPostId(userId, postId) {
-  return connection.query(
-    `SELECT * FROM reposts WHERE "userId" = $1 AND "postId" = $2;`,
-    [userId, postId]
-  );
+  return connection.query(`SELECT * FROM reposts WHERE "userId" = $1 AND "postId" = $2;`, [
+    userId,
+    postId,
+  ]);
 }
 
 async function insertRepost({ userId, postId }) {
-  return connection.query(
-    `INSERT INTO reposts ("userId", "postId") VALUES ($1,$2);`,
-    [userId, postId]
-  );
+  return connection.query(`INSERT INTO reposts ("userId", "postId") VALUES ($1,$2);`, [
+    userId,
+    postId,
+  ]);
 }
 
 const insertCommentOnPost = ({ postId, userId, content }) => {

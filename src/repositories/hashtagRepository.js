@@ -48,8 +48,6 @@ async function getHashtagByName({ hashtagName, limit, offset }) {
         JOIN users "u" ON "p"."userId" = "u"."id"
         JOIN metadata "m" ON "p"."metadataId" = "m"."id"
         LEFT JOIN visits "v" ON "v"."postId" = "p"."id"
-      LEFT JOIN reposts "r" ON "r"."postId" = "p"."id"
-      LEFT JOIN users "u2" ON "r"."userId" = "u2"."id"
       WHERE hashtags.name = $1
       UNION ALL
       SELECT
